@@ -1,0 +1,17 @@
+#version 430
+layout (location = 0) in vec3 position;
+layout (location = 1) in vec3 normal;
+
+uniform mat4 pv;
+uniform mat4 light_cam;
+uniform vec3 grid_loc;
+uniform vec3 sun_dir;
+out float lighting;
+out vec4 shadow_coord; 
+
+void main(void) {
+    shadow_coord = light_cam*vec4(grid_loc.x + position.x, grid_loc.y + position.y, grid_loc.z + position.z, 1.0);
+
+    lighting = max(dot(normal, sun_dir), 0.0);
+    gl_Position = pv*vec4(grid_loc.x + position.x, grid_loc.y + position.y, grid_loc.z + position.z, 1.0);
+}
