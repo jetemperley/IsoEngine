@@ -4,4 +4,4 @@ javac -d bin -classpath .;jogl-all.jar;jogl-all-natives-windows-amd64.jar;gluege
 
 cd C:\Users\JET\Documents\GitHub\IsoEngine\bin
 
-java -classpath .;jogl-all.jar;jogl-all-natives-windows-amd64.jar;gluegen-rt.jar Game
+java -classpath .;jogl-all.jar;jogl-all-natives-windows-amd64.jar;gluegen-rt.jar IsoEngine
