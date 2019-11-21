@@ -130,55 +130,62 @@ public class GeoVerts {
 
         float[] arr = transformSet(getTopFaceVerts(), mat);
         arr = removeEvery4th(arr);
-        return arr;
+        float[] f = addTexCoords(arr, 6);
+        return f;
     }
 
-    public static float[] getTopVerts() {
+    static float[] getTopVerts() {
         float[] arr = removeEvery4th(getTopFaceVerts());
-        return arr;
+        float[] f = addTexCoords(arr, 6);
+        return f;
     }
 
-    public static float[] getFrontVerts() {
+    static float[] getFrontVerts() {
         Matrix4 mat = new Matrix4();
         mat.loadIdentity();
         mat.rotate((float)Math.PI/2, 1, 0, 0);
 
         float[] arr = transformSet(getTopFaceVerts(), mat);
         arr = removeEvery4th(arr);
-        return arr;
+        float[] f = addTexCoords(arr, 6);
+        return f;
     }
 
-    public static float[] getBackVerts() {
+    static float[] getBackVerts() {
         Matrix4 mat = new Matrix4();
         mat.loadIdentity();
         mat.rotate((float)-Math.PI/2, 1, 0, 0);
 
         float[] arr = transformSet(getTopFaceVerts(), mat);
         arr = removeEvery4th(arr);
-        return arr;
+        float[] f = addTexCoords(arr, 6);
+        return f;
     }
 
-    public static float[] getLeftVerts() {
+    static float[] getLeftVerts() {
         Matrix4 mat = new Matrix4();
         mat.loadIdentity();
         mat.rotate((float)-Math.PI/2, 0, 1, 0);
 
         float[] arr = transformSet(getTopFaceVerts(), mat);
         arr = removeEvery4th(arr);
-        return arr;
+        float[] f = addTexCoords(arr, 6);
+        return f;
     }
 
-    public static float[] getRightVerts() {
+    static float[] getRightVerts() {
         Matrix4 mat = new Matrix4();
         mat.loadIdentity();
         mat.rotate((float)Math.PI/2, 0, 1, 0);
 
         float[] arr = transformSet(getTopFaceVerts(), mat);
         arr = removeEvery4th(arr);
-        return arr;
+        float[] f = addTexCoords(arr, 6);
+        return f;
     }
 
     static float[] interleave(float[] verts, float[] normals){
+
         float[] combined = new float[verts.length + normals.length];
         for (int i = 0; i < verts.length; i+=3){
             combined[i*2] = verts[i];
@@ -192,5 +199,62 @@ public class GeoVerts {
         }
 
         return combined;
+    }
+
+    // precondition: a.length/asize == b.length/bsize == c.length/csize || each arrays elements are represented in each other array 1:1
+
+    static float[] interleave(float[] a, int asize, float[] b, int bsize, float[] c, int csize){
+        
+        float[] out = new float[a.length + b.length + c.length];
+        int elements = a.length/asize;
+        int size = asize + bsize + csize;
+
+        for (int i = 0; i < elements; i++){
+            for (int j = 0; j < asize; j++){
+                out[i*size + j] = a[i*asize + j];
+            }
+            for (int j = 0; j < bsize; j++){
+                out[i*size + j + asize] = b[i*bsize + j];
+
+            }
+            for (int j = 0; j < csize; j++){
+                out[i*size + j + asize + bsize] = c[i*csize + j];
+            }
+        }
+
+
+        return out;
+        
+    }
+
+    static float[] addTexCoords(float[] verts, int stride){
+
+        // System.out.println("verts " + (verts.length/6));
+
+        float[] v2 = new float[verts.length + 8];
+        float[] tc = {
+            0, 1,
+            1, 1,
+            0, 0,
+            1, 0
+        };
+
+        int j = 0;
+        for (int i = 0; i < verts.length; i+=stride){
+
+            for (int k = 0; k < stride; k++){
+                v2[i + k + j] = verts[i + k];
+            }
+            j+=2;
+        }
+
+        j = 0;
+        for (int i = stride; i < v2.length; i +=stride+2){
+            v2[i] = tc[j];
+            v2[i+1] = tc[j+1];
+            j+=2;
+        }
+
+        return v2;
     }
 }

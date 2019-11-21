@@ -21,7 +21,8 @@ public class Assets {
     static ArrayList<float[]> meshs;
     static int[] joglTexLocs;
     // texture asset IDs
-    static int SMILE = 0, PICK = 1, SELECT = 2, WALK = 3, PLUS = 4;
+    static int SMILE = 0, PICK = 1, SELECT = 2, WALK = 3, PLUS = 4, GRASS = 5,
+        DIRT = 6, MAN_TEX = 7;
 
     Assets() {
         texs = new ArrayList<Texture>();
@@ -31,6 +32,9 @@ public class Assets {
         texs.add(loadTexture("select.png"));
         texs.add(loadTexture("walk.png"));
         texs.add(loadTexture("plus.png"));
+        texs.add(loadTexture("grass.png"));
+        texs.add(loadTexture("dirt.png"));
+        texs.add(loadTexture("man_tex.png"));
 
         // System.out.println("texs length " + texs.size());
         joglTexLocs = new int[texs.size()];
@@ -111,24 +115,33 @@ public class Assets {
 
     static float[] getData(XmlNode mainNode) {
         float[] verts = extractVerticiesFromXML(mainNode);
-        float[] normals = extractTrianglesFromXML(mainNode, "NORMAL");
+        float[] norms = extractTrianglesFromXML(mainNode, "NORMAL");
+        float[] texs = extractTrianglesFromXML(mainNode, "TEXCOORD");
         int[] idx = extractIndecies(mainNode);
 
         int tris = Integer.parseInt(mainNode.getChild("library_geometries").getChild("geometry").getChild("mesh")
                 .getChild("triangles").getAttribute("count"));
 
+        // 3 floats *3 points per triangle
+        // 2 tcs * 3 points per tri
         float[] expVerts = new float[tris * 9];
         float[] expNorms = new float[tris * 9];
+        float[] expTexs = new float[tris * 6];
         int j = 0;
+        int t = 0;
         for (int i = 0; i < idx.length; i += 3) {
             for (int k = 0; k < 3; k++) {
                 expVerts[j] = verts[(idx[i]*3) + k];
-                expNorms[j] = normals[(idx[i + 1]*3) + k];
+                expNorms[j] = norms[(idx[i + 1]*3) + k];
                 j++;
+            }
+            for(int k = 0; k < 2; k++){
+                expTexs[t] = texs[idx[i+2]*2 + k];
+                t++;
             }
         }
 
-        float[] expanded = GeoVerts.interleave(expVerts, expNorms);
+        float[] expanded = GeoVerts.interleave(expVerts, 3, expNorms, 3, expTexs, 2);
 
         return expanded;
     }

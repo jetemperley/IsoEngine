@@ -37,12 +37,14 @@ public class World {
 
     void draw(GLGraphics g) {
 
+        // draw all the chunks
         for (int y = 0; y < chunks.length; y++) {
             for (int x = 0; x < chunks[y].length; x++) {
                 chunks[y][x].draw(g);
             }
         }
 
+        // draw the selection cube
         if (selected != null) {
             g.setColorLoc(0, 1, 0, 0.5f);
             g.setDrawLoc(selected.getX(), selected.getY(), selected.getZ());
@@ -316,7 +318,7 @@ public class World {
 
         void draw(GLGraphics g) {
 
-            g.setColorLoc(1, 1, 1, 1);
+            g.setColorLoc(0, 0, 0, 1);
 
             for (Cell c : visiCells) {
                 c.draw(g);
