@@ -7,7 +7,7 @@ interface Action {
 
     boolean isDone();
     public void init();
-    public void execute(Player t);
+    public void exe(Player t);
 
     // static Action getBasicMove(int xi, int yi, int zi) {
     //     Action act;
@@ -89,7 +89,7 @@ interface Action {
 
         }
 
-        public void execute(Player t) {
+        public void exe(Player t) {
 
             if (dx != 0) {
                 t.dx = dx / 10f;
@@ -118,23 +118,19 @@ interface Action {
         ArrayList<int[]> path;
         Action currentStep = null;
         boolean done = false;
+        int xtarget, ytarget, ztarget;
 
-        TakePath(Player t, ArrayList<int[]> path) {
-            if (path.size() > 0) {
-                this.path = path;
-                int[] s = path.get(path.size() - 1);
-                path.remove(path.size() - 1);
-                // currentStep = Action.getBasicMove(s[0] - t.getLocX(), s[1] - t.getLocY(), s[2] - t.getLocZ());
-            } else {
-                done = true;
-            }
+        TakePath(Player t, int x, int y, int z) {
+            
+            
+
         }
 
         public void init(){
 
         }
 
-        public void execute(Player t) {
+        public void exe(Player t) {
 
             if (currentStep.isDone()) {
                 if (path.size() > 0) {
@@ -147,7 +143,7 @@ interface Action {
                     done = true;
                 }
             } else {
-                currentStep.execute(t);
+                currentStep.exe(t);
             }
 
         }
