@@ -53,7 +53,7 @@ abstract class MButton {
         }
     }
 
-    void use(GameState s){
+    void use(GameState s, int button){
 
     }
 

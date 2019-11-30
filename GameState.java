@@ -10,20 +10,23 @@ class GameState {
     World world;
     Player inputTarget;
     int hoverx, hovery, hoverz;
+    static MoveSets moveSets;
+
 
     boolean getDepth = true;
     float lastDepth = 0;
 
     Menu menu;
     final static float SELECT_EMPTY_SPACE = -0.0015f, SELECT_OCCUPIED_SPACE = 0.0015f;
-    static float SELECTION_TYPE = SELECT_EMPTY_SPACE;
+    static float DEFAULT_SELECTION = SELECT_EMPTY_SPACE, SELECTION_TYPE = DEFAULT_SELECTION;
 
     GameState() {
+        moveSets = new MoveSets();
         world = new World();
         inputTarget = new Player();
         world.addRandomly(inputTarget);
-
         menu = new Menu();
+        
     }
 
     void draw(GLGraphics g) {
@@ -106,14 +109,12 @@ class GameState {
 
     }
 
-    
-
-    void doAngledDrag3(int xdrag, int ydrag) {
+    void doAngledDrag(int xdrag, int ydrag) {
 
         float[] angles = IsoEngine.graphics.cam.getAngles();
         float angle = IsoEngine.graphics.cam.getElevation() - (float)(Math.PI/2);
         angle = (float)(1/Math.sin(angle));
-        System.out.println("angle: " + angle);
+        // System.out.println("angle: " + angle);
 
         float[] loc = { -xdrag / (float) Camera.GRID_SIZE, -ydrag*angle / (float) Camera.GRID_SIZE, 0, 0 };
         float[] loc2 = new float[4];
@@ -122,13 +123,6 @@ class GameState {
 
         cam.rotate(angles[2], 0, 0, 1);
         cam.multVec(loc, loc2);
-
-        // cam.multMatrix(Game.graphics.cam.view.getMatrix());
-        // cam.invert();
-        // cam.multVec(loc, altLoc);
-        
-        // System.out.println("x " + loc[0] + " y " + loc[1]);
-        // System.out.println("angle " + angle);
 
         IsoEngine.graphics.cam.offset(loc2[0], loc2[1], 0);
 
@@ -153,28 +147,36 @@ class GameState {
 
         if (menu.hovered != null) {
             menu.onClick(button);
+        } else if (menu.selected != null){
+            menu.selected.use(this, button);
+
         } else {
-            if (button == 1) {
-                // left click
-                // world.select(hoverx, hovery, hoverz);
-                menu.selected.use(this);
-            } else if (button == 3) {
-                // right click
-                if (world.selected != null) {
-                    world.selected.rightClick(world, hoverx, hovery, hoverz);
-
-                }
-
-            }
+            defaultWorldClick(button);
         }
 
+    }
+
+    void defaultWorldClick(int button){
+        switch (button){
+            
+            case 1:
+                world.select(hoverx, hovery, hoverz);
+                break;
+            case 3:
+                if (world.selected != null) {
+                    world.selected.rightClick(world, hoverx, hovery, hoverz);
+                }
+                break;
+            
+
+        }
     }
 
     void mouseDrag(int button, int xdrag, int ydrag) {
 
         switch (button) {
         case MouseEvent.BUTTON3 + IsoEngine.MOUSE_KEY_OFFSET:
-            doAngledDrag3(xdrag, ydrag);
+            doAngledDrag(xdrag, ydrag);
             break;
         case MouseEvent.BUTTON1 + IsoEngine.MOUSE_KEY_OFFSET:
             if (lastDepth != 1.0f) {

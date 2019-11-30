@@ -27,7 +27,9 @@ public class World {
 
                 chunks[y][x].visiCells = new ArrayList<Cell>();
                 chunks[y][x].things = new ArrayList<Thing>();
+                System.out.println("started get visi " + x + " " + y);
                 chunks[y][x].visiCells = getVisiCells(x, y);
+                System.out.println("finished get visi " + x + " " + y);
                 chunks[y][x].things = getThings(x, y);
 
             }
@@ -38,6 +40,11 @@ public class World {
     void draw(GLGraphics g) {
 
         // draw all the chunks
+        for (int y = 0; y < chunks.length; y++) {
+            for (int x = 0; x < chunks[y].length; x++) {
+                chunks[y][x].update(this);
+            }
+        }
         for (int y = 0; y < chunks.length; y++) {
             for (int x = 0; x < chunks[y].length; x++) {
                 chunks[y][x].draw(g);
@@ -53,7 +60,19 @@ public class World {
 
     }
 
+    // teleports piece at xyz by xiyizi
+    void move(Thing t, int xi, int yi, int zi) {
+        if (get(t.x + xi, t.y + yi, t.z + zi) == null) {
+            setThing(t.x + xi, t.y + yi, t.z + zi, t);
+            setThing(t.x, t.y, t.z, null);
+        }
+        t.x += xi;
+        t.y += yi;
+        t.z += zi;
+    }
+
     void updateCells() {
+        System.out.println("update cells");
         for (int y = 0; y < chunks.length; y++) {
             for (int x = 0; x < chunks[y].length; x++) {
 
@@ -86,6 +105,7 @@ public class World {
         try {
             return chunks[y / Chunk.SIZE][x / Chunk.SIZE].data[z][y % Chunk.SIZE][x % Chunk.SIZE];
         } catch (ArrayIndexOutOfBoundsException e) {
+            // System.out.println("world get returned null");
             return null;
         }
     }
@@ -97,12 +117,22 @@ public class World {
         } catch (ArrayIndexOutOfBoundsException e) {
             System.out.println("setThing out of bounds");
         }
-        
+
     }
 
     static int getAbsSize() {
         return WORLD_SIZE * Chunk.SIZE;
     }
+
+    void updateVisiCell(int x, int y, int z) {
+        Thing t = get(x, y, z);
+        if (t.getType() == Thing.CELL) {
+
+        }
+
+    }
+
+    
 
     ArrayList<Cell> getVisiCells(int chunkx, int chunky) {
 
@@ -112,51 +142,29 @@ public class World {
         for (int z = 0; z < Chunk.SIZE; z++) {
             for (int y = chunky * Chunk.SIZE; y < chunky * Chunk.SIZE + Chunk.SIZE; y++) {
                 for (int x = chunkx * Chunk.SIZE; x < chunkx * Chunk.SIZE + Chunk.SIZE; x++) {
+                    // if the thing is a block
+                    if (get(x, y, z) != null && get(x, y, z).getType() == Thing.CELL) {
+                        // check if any any of teh edges are open to air (open to a null)
 
-                    if ((chunks[y / Chunk.SIZE][x / Chunk.SIZE].data[z][y % Chunk.SIZE][x % Chunk.SIZE] != null)
-                            && chunks[y / Chunk.SIZE][x / Chunk.SIZE].data[z][y % Chunk.SIZE][x % Chunk.SIZE]
-                                    .getType() == 0) {
+                        // if (get(x + 1, y, z) == null || get(x, y + 1, z) == null || get(x, y, z + 1) == null
+                        //         || get(x - 1, y, z) == null || get(x, y - 1, z) == null || get(x, y, z - 1) == null) {
+                        //     locs.add((Cell) get(x, y, z));
+                        //     // System.out.println("added cell " + x + " " + y + " " + z);
 
-                        try {
-                            if (chunks[y / Chunk.SIZE][x / Chunk.SIZE].data[z + 1][y % Chunk.SIZE][x % Chunk.SIZE]
-                                    .getType() != 0) {
-                                locs.add((Cell) chunks[y / Chunk.SIZE][x / Chunk.SIZE].data[z][y % Chunk.SIZE][x
-                                        % Chunk.SIZE]);
-
-                            } else if (chunks[y / Chunk.SIZE][x / Chunk.SIZE].data[z - 1][y % Chunk.SIZE][x
-                                    % Chunk.SIZE].getType() != 0) {
-                                locs.add((Cell) chunks[y / Chunk.SIZE][x / Chunk.SIZE].data[z][y % Chunk.SIZE][x
-                                        % Chunk.SIZE]);
-
-                            } else if (chunks[(y + 1) / Chunk.SIZE][x / Chunk.SIZE].data[z][(y + 1) % Chunk.SIZE][x
-                                    % Chunk.SIZE].getType() != 0) {
-                                locs.add((Cell) chunks[y / Chunk.SIZE][x / Chunk.SIZE].data[z][y % Chunk.SIZE][x
-                                        % Chunk.SIZE]);
-
-                            } else if (chunks[(y - 1) / Chunk.SIZE][x / Chunk.SIZE].data[z][(y - 1) % Chunk.SIZE][x
-                                    % Chunk.SIZE].getType() != 0) {
-                                locs.add((Cell) chunks[y / Chunk.SIZE][x / Chunk.SIZE].data[z][y % Chunk.SIZE][x
-                                        % Chunk.SIZE]);
-
-                            } else if (chunks[y / Chunk.SIZE][(x + 1) / Chunk.SIZE].data[z][y % Chunk.SIZE][(x + 1)
-                                    % Chunk.SIZE].getType() != 0) {
-                                locs.add((Cell) chunks[y / Chunk.SIZE][x / Chunk.SIZE].data[z][y % Chunk.SIZE][x
-                                        % Chunk.SIZE]);
-
-                            } else if (chunks[y / Chunk.SIZE][(x - 1) / Chunk.SIZE].data[z][y % Chunk.SIZE][(x - 1)
-                                    % Chunk.SIZE].getType() != 0) {
-                                locs.add((Cell) chunks[y / Chunk.SIZE][x / Chunk.SIZE].data[z][y % Chunk.SIZE][x
-                                        % Chunk.SIZE]);
-
+                        // }
+                        try{
+                            if (get(x + 1, y, z).getType() != Thing.CELL || get(x, y + 1, z).getType() != Thing.CELL || get(x, y, z + 1).getType() != Thing.CELL
+                                || get(x - 1, y, z).getType() != Thing.CELL || get(x, y - 1, z).getType() != Thing.CELL || get(x, y, z - 1).getType() != Thing.CELL){
+                                
+                                locs.add((Cell)get(x, y, z));
+                                
                             }
-                        } catch (ArrayIndexOutOfBoundsException e) {
-                            locs.add((Cell) chunks[y / Chunk.SIZE][x / Chunk.SIZE].data[z][y % Chunk.SIZE][x
-                                    % Chunk.SIZE]);
-
-                        } catch (NullPointerException e) {
-                            locs.add((Cell) chunks[y / Chunk.SIZE][x / Chunk.SIZE].data[z][y % Chunk.SIZE][x
-                                    % Chunk.SIZE]);
+                        } catch (NullPointerException e){
+                            locs.add((Cell)get(x, y, z));
                         }
+
+                        
+
                     }
 
                 }
@@ -165,69 +173,9 @@ public class World {
         }
 
         for (Cell c : locs) {
-
-            try {
-
-                if (chunks[c.getLocY() / Chunk.SIZE][c.getLocX() / Chunk.SIZE].data[c.getLocZ() + 1][c.getLocY()
-                        % Chunk.SIZE][c.getLocX() % Chunk.SIZE] == null) {
-                    c.faces[0] = true;
-                }
-            } catch (ArrayIndexOutOfBoundsException e) {
-                c.faces[0] = true;
-            }
-
-            try {
-                if (chunks[c.getLocY() / Chunk.SIZE][c.getLocX() / Chunk.SIZE].data[c.getLocZ() - 1][c.getLocY()
-                        % Chunk.SIZE][c.getLocX() % Chunk.SIZE] == null) {
-                    c.faces[1] = true;
-                }
-            } catch (ArrayIndexOutOfBoundsException e) {
-                c.faces[1] = true;
-            }
-
-            try {
-                if (chunks[c.getLocY() / Chunk.SIZE][(c.getLocX() - 1) / Chunk.SIZE].data[c.getLocZ()][c.getLocY()
-                        % Chunk.SIZE][(c.getLocX() - 1) % Chunk.SIZE] == null) {
-                    c.faces[2] = true;
-                }
-            } catch (ArrayIndexOutOfBoundsException e) {
-                c.faces[2] = true;
-            }
-
-            try {
-                if (chunks[c.getLocY() / Chunk.SIZE][(c.getLocX() + 1) / Chunk.SIZE].data[c.getLocZ()][c.getLocY()
-                        % Chunk.SIZE][(c.getLocX() + 1) % Chunk.SIZE] == null) {
-                    c.faces[3] = true;
-                }
-            } catch (ArrayIndexOutOfBoundsException e) {
-                c.faces[3] = true;
-            }
-
-            try {
-                if (chunks[(c.getLocY() - 1) / Chunk.SIZE][c.getLocX() / Chunk.SIZE].data[c.getLocZ()][(c.getLocY() - 1)
-                        % Chunk.SIZE][c.getLocX() % Chunk.SIZE] == null) {
-                    c.faces[4] = true;
-                }
-            } catch (ArrayIndexOutOfBoundsException e) {
-                c.faces[4] = true;
-            }
-
-            try {
-                if (chunks[(c.getLocY() + 1) / Chunk.SIZE][c.getLocX() / Chunk.SIZE].data[c.getLocZ()][(c.getLocY() + 1)
-                        % Chunk.SIZE][c.getLocX() % Chunk.SIZE] == null) {
-                    c.faces[5] = true;
-                }
-            } catch (ArrayIndexOutOfBoundsException e) {
-                c.faces[5] = true;
-            }
+            c.updateFaces(this);
         }
 
-        Cell[] locArr = new Cell[locs.size()];
-        for (int k = 0; k < locArr.length; k++) {
-
-            locArr[k] = locs.get(k);
-            // System.out.print(" " + locArr[i]);
-        }
         return locs;
 
     }
@@ -249,15 +197,9 @@ public class World {
             }
         }
 
-        Thing[] ts = new Thing[locs.size()];
-        for (int i = 0; i < ts.length; i++) {
-            ts[i] = locs.get(i);
-        }
-
         return locs;
     }
 
-    // TODO update to account for all cases of placement
     void addRandomly(Thing piece) {
         int x = (int) (Math.random() * Chunk.SIZE);
         int y = (int) (Math.random() * Chunk.SIZE);
@@ -276,9 +218,6 @@ public class World {
         // System.out.println("added piece to " + piece.x + " "+ piece.y + " " + piece.z
         // + " ");
         if (piece.getType() != 0) {
-            // things.add(piece);
-            System.out
-                    .println("added piece to " + piece.getLocX() + " " + piece.getLocY() + " " + piece.getLocZ() + " ");
             chunks[piece.getLocY() / Chunk.SIZE][piece.getLocX() / Chunk.SIZE].things.add(piece);
         }
 
@@ -314,6 +253,12 @@ public class World {
             }
             // visLocs=getVisibleGridLocs();
 
+        }
+
+        void update(World w) {
+            for (Thing t : things) {
+                t.update(w);
+            }
         }
 
         void draw(GLGraphics g) {

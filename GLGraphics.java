@@ -414,16 +414,12 @@ public class GLGraphics {
         normout[1] = intersect.y;
         normout[2] = intersect.z;
         camInv.multVec(normout, norm);
-        if (IsoEngine.printlog) {
-            System.out.println("grid hovered " + norm[0] + " " + norm[1]);
-        }
+        
         norm[0] = (float) Math.floor(norm[0]);
         norm[1] = (float) Math.floor(norm[1]);
         // norm[2] = (float)Math.floor(norm[2]/20);
         norm[2] = 0;
-        if (IsoEngine.printlog) {
-            System.out.println("floored to " + norm[0] + " " + norm[1]);
-        }
+        
         g.glUniform3f(gridLoc, norm[0], norm[1], norm[2]);
         // drawSingleCube(g);
 

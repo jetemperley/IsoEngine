@@ -5,14 +5,14 @@ import java.util.ArrayList;
 
 abstract class Thing {
 
-    VBO v;
+    static MoveSets moveSets;
     // absoltute world location
-    private int x, y, z;
+    int x, y, z;
 
     // offset to absolute location (animation purposes)
     float dx = 0, dy = 0, dz = 0;
 
-    static int CELL = 0, PLAYER = 1;
+    static int UNSPECIFIED = -1, CELL = 0, PLAYER = 1;
 
     Thing(){
         this(0, 0, 0);
@@ -25,11 +25,11 @@ abstract class Thing {
         
     }
 
-    ArrayList<int[]> getPossibleSteps(World w) {
+    ArrayList<Action> getPossibleSteps(World w) {
         return getPossibleSteps(w, x, y, z);
     }
 
-    ArrayList<int[]> getPossibleSteps(World w, int x, int y, int z) {
+    ArrayList<Action> getPossibleSteps(World w, int x, int y, int z) {
         return null;
     }
 
@@ -38,19 +38,15 @@ abstract class Thing {
     }
 
     int getType() {
-        return 0;
+        return UNSPECIFIED;
     }
 
     void draw(GLGraphics g) {
 
     }
 
-    void update(){
-
-    }
-
-    float getX(){
-        return x+dx;
+    void update(World w){
+        
     }
 
     int getLocX(){
@@ -65,12 +61,16 @@ abstract class Thing {
         return z;
     }
 
+    float getX(){
+        return x+(dx/100);
+    }
+
     float getY(){
-        return y+dy;
+        return y+(dy/100);
     }
 
     float getZ(){
-        return z+dz;
+        return z+(dz/100);
     }
 
     void setLoc(int x, int y, int z){
