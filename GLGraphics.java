@@ -47,6 +47,12 @@ public class GLGraphics {
         this.g = g;
 
         assets = new Assets();
+        for (int i : Assets.joglTexLocs) {
+            g.glBindTexture(GL4.GL_TEXTURE_2D, i);
+            g.glTexParameteri(GL4.GL_TEXTURE_2D, GL4.GL_TEXTURE_MIN_FILTER, GL4.GL_LINEAR_MIPMAP_LINEAR);
+            g.glGenerateMipmap(GL4.GL_TEXTURE_2D);
+        }
+
         temp = new Matrix4();
 
         vao = new int[3];
@@ -117,18 +123,21 @@ public class GLGraphics {
         // g.glBindFramebuffer(GL4.GL_FRAMEBUFFER, customBuffers[0]);
         g.glFramebufferTexture(GL4.GL_FRAMEBUFFER, GL4.GL_DEPTH_ATTACHMENT, customTextures[0], 0);
         g.glDrawBuffer(GL4.GL_FRONT);
-        
+
         // set all the configurations for vao[0], render program
         g.glBindBuffer(GL4.GL_ARRAY_BUFFER, vbo[0]);
-        // vm.add("sphere", Sphere.getVerts(5));
         FloatBuffer verts = vm.genBuffer();
         g.glBufferData(GL4.GL_ARRAY_BUFFER, verts.limit() * 4, verts, GL4.GL_STATIC_DRAW);
+
         // configure pointer for position
-        g.glVertexAttribPointer(0, 3, GL4.GL_FLOAT, false, 24, 0);
+        g.glVertexAttribPointer(0, 3, GL4.GL_FLOAT, false, 32, 0);
         g.glEnableVertexAttribArray(0);
         // config pointer for normals
-        g.glVertexAttribPointer(1, 3, GL4.GL_FLOAT, false, 24, 12);
+        g.glVertexAttribPointer(1, 3, GL4.GL_FLOAT, false, 32, 12);
         g.glEnableVertexAttribArray(1);
+        // pointer for tex coords
+        g.glVertexAttribPointer(2, 2, GL4.GL_FLOAT, false, 32, 24);
+        g.glEnableVertexAttribArray(2);
     }
 
     void initMenuProg(GL4 g) {
@@ -137,8 +146,15 @@ public class GLGraphics {
 
         // regular pointer for verts
         g.glBindBuffer(GL4.GL_ARRAY_BUFFER, vbo[0]);
-        g.glVertexAttribPointer(0, 3, GL4.GL_FLOAT, false, 24, 0);
+        // configure pointer for position
+        g.glVertexAttribPointer(0, 3, GL4.GL_FLOAT, false, 32, 0);
         g.glEnableVertexAttribArray(0);
+        // config pointer for normals
+        g.glVertexAttribPointer(1, 3, GL4.GL_FLOAT, false, 32, 12);
+        g.glEnableVertexAttribArray(1);
+        // pointer for tex coords
+        g.glVertexAttribPointer(2, 2, GL4.GL_FLOAT, false, 32, 24);
+        g.glEnableVertexAttribArray(2);
 
         // pointer for texture coords
         g.glBindBuffer(GL4.GL_ARRAY_BUFFER, vbo[1]);
@@ -147,9 +163,6 @@ public class GLGraphics {
 
         FloatBuffer buff = Buffers.newDirectFloatBuffer(GeoVerts.getFaceTexCoords());
         g.glBufferData(GL4.GL_ARRAY_BUFFER, buff.limit() * 4, buff, GL4.GL_STATIC_DRAW);
-
-        g.glVertexAttribPointer(1, 2, GL4.GL_FLOAT, false, 0, 0);
-        g.glEnableVertexAttribArray(1);
 
         transLoc = g.glGetUniformLocation(ui_rend_prog, "t");
         altColorLoc = g.glGetUniformLocation(ui_rend_prog, "alt_color");
@@ -163,7 +176,7 @@ public class GLGraphics {
         this.g = g;
 
         g.glClear(GL4.GL_COLOR_BUFFER_BIT);
-        enableEnvProg();        
+        enableEnvProg();
         g.glClear(GL4.GL_DEPTH_BUFFER_BIT);
 
         // set uniforms
@@ -178,7 +191,6 @@ public class GLGraphics {
         lightCam2.multMatrix(sunV);
 
         g.glUniformMatrix4fv(lightCamLoc, 1, false, sunPV.getMatrix(), 0);
-
         g.glUniform3f(gridLoc, 0, 0, 0);
 
         // sModel.loadIdentity();
@@ -192,7 +204,7 @@ public class GLGraphics {
 
     }
 
-    void enableEnvProg(){
+    void enableEnvProg() {
 
         g.glBindVertexArray(vao[0]);
         g.glUseProgram(rendering_program);
@@ -227,14 +239,13 @@ public class GLGraphics {
         g.glUniform4f(altColorLoc, 0, 0, 0, 0);
 
         // g.glBindFramebuffer(GL4.GL_FRAMEBUFFER, 0);
-        
+
         // g.glBindFramebuffer(GL4.GL_FRAMEBUFFER, customBuffers[1]);
         g.glFramebufferTexture(GL4.GL_FRAMEBUFFER, GL4.GL_DEPTH_ATTACHMENT, customTextures[1], 0);
         // g.glClear(GL4.GL_DEPTH_BUFFER_BIT);
         g.glDrawBuffer(GL4.GL_FRONT);
 
         // g.glDisable(GL4.GL_DEPTH_TEST);
-        
 
         g.glActiveTexture(GL4.GL_TEXTURE0);
         g.glBindTexture(GL4.GL_TEXTURE_2D, Assets.joglTexLocs[0]);
@@ -257,16 +268,14 @@ public class GLGraphics {
         temp.translate((x * 2) - 1, (y * 2) + 1, 0);
         // scale from 0-1 proportion of the screen to opengl coords
         temp.scale(width * 2, height * 2, 1);
-        if (IsoEngine.printlog) {
-            Mat4Utl.writeMat4(temp);
-        }
+
         g.glUniformMatrix4fv(transLoc, 1, false, temp.getMatrix(), 0);
 
+        g.glActiveTexture(GL4.GL_TEXTURE0);
         g.glBindTexture(GL4.GL_TEXTURE_2D, Assets.joglTexLocs[assetID]);
         vt = vm.getVBO(VBOManager.CUBE_TOP);
         g.glDrawArrays(vt.vertexPattern, vt.start / vm.VERT_SIZE, vt.length);
     }
-
 
     void drawMenuFace(float x, float y, float width, float height, int assetID, float r, float g, float b, float a) {
 
@@ -278,7 +287,7 @@ public class GLGraphics {
         temp.translate((x * 2) - 1, (y * 2) + 1, 0);
         // scale from 0-1 proportion of the screen to opengl coords
         temp.scale(width * 1.75f, height * 1.75f, 1);
-        
+
         this.g.glUniformMatrix4fv(transLoc, 1, false, temp.getMatrix(), 0);
         this.g.glActiveTexture(GL4.GL_TEXTURE0);
         this.g.glBindTexture(GL4.GL_TEXTURE_2D, assetID);
@@ -290,6 +299,8 @@ public class GLGraphics {
     void drawCube(boolean[] faces) {
 
         iter = 0;
+        g.glActiveTexture(GL4.GL_TEXTURE1);
+        g.glBindTexture(GL4.GL_TEXTURE_2D, Assets.joglTexLocs[Assets.DIRT]);
         while (iter < 6) {
             if (faces[iter]) {
 
@@ -298,11 +309,17 @@ public class GLGraphics {
             }
             iter++;
         }
-
     }
 
-    void drawMesh(int i){
-        vt = vm.getVBO(i);
+    void drawMesh(int assetID) {
+        vt = vm.getVBO(assetID);
+        g.glBindTexture(GL4.GL_TEXTURE_2D, 0);
+        g.glDrawArrays(vt.vertexPattern, vt.start / vm.VERT_SIZE, vt.length);
+    }
+
+    void drawMesh(int assetID, int texID) {
+        vt = vm.getVBO(assetID);
+        g.glBindTexture(GL4.GL_TEXTURE_2D, Assets.joglTexLocs[texID]);
         g.glDrawArrays(vt.vertexPattern, vt.start / vm.VERT_SIZE, vt.length);
     }
 
@@ -323,13 +340,13 @@ public class GLGraphics {
 
     float getDepthAt(int x, int y) {
         FloatBuffer buffer = FloatBuffer.allocate(4);
-        g.glReadPixels(x, IsoEngine.HEIGHT-y, 1, 1, GL4.GL_DEPTH_COMPONENT, GL4.GL_FLOAT, buffer);
+        g.glReadPixels(x, IsoEngine.HEIGHT - y, 1, 1, GL4.GL_DEPTH_COMPONENT, GL4.GL_FLOAT, buffer);
         return buffer.get(0);
     }
 
     // buffer must have at least 4 bytes of memory allocated
     float getDepthAt(int x, int y, FloatBuffer buffer) {
-        g.glReadPixels(x, IsoEngine.HEIGHT-y, 1, 1, GL4.GL_DEPTH_COMPONENT, GL4.GL_FLOAT, buffer);
+        g.glReadPixels(x, IsoEngine.HEIGHT - y, 1, 1, GL4.GL_DEPTH_COMPONENT, GL4.GL_FLOAT, buffer);
         return buffer.get(0);
     }
 
@@ -370,17 +387,6 @@ public class GLGraphics {
 
     }
 
-    void drawGridLocs(Cell[] locs) {
-        for (int i = 0; i < locs.length; i++) {
-            g.glUniform3f(currentGridLoc, locs[i].getX() + cam.xoff, locs[i].getY() + cam.yoff, locs[i].getZ() + cam.zoff);
-            // System.out.println(locData[i] + " " + locData[i + 1] + " " + locData[i + 2]);
-
-            drawCube();
-
-        }
-        g.glUniform3f(gridLoc, 0, 0, 0);
-    }
-
     void raycastMouse(GL4 g, int mouseX, int mouseY) {
 
         float[] coords1 = cam.screenToWorld(mouseX, mouseY);
@@ -408,22 +414,44 @@ public class GLGraphics {
         normout[1] = intersect.y;
         normout[2] = intersect.z;
         camInv.multVec(normout, norm);
-        if (IsoEngine.printlog) {
-            System.out.println("grid hovered " + norm[0] + " " + norm[1]);
-        }
+        
         norm[0] = (float) Math.floor(norm[0]);
         norm[1] = (float) Math.floor(norm[1]);
         // norm[2] = (float)Math.floor(norm[2]/20);
         norm[2] = 0;
-        if (IsoEngine.printlog) {
-            System.out.println("floored to " + norm[0] + " " + norm[1]);
-        }
+        
         g.glUniform3f(gridLoc, norm[0], norm[1], norm[2]);
         // drawSingleCube(g);
 
     }
 
     void drawCube() {
+        g.glBindTexture(GL4.GL_TEXTURE_2D, 0);
+
+        VBO v;
+        v = vm.getVBO(VBOManager.CUBE_TOP);
+        g.glDrawArrays(v.vertexPattern, v.start / vm.VERT_SIZE, v.length);
+
+        v = vm.getVBO(VBOManager.CUBE_BOT);
+        g.glDrawArrays(v.vertexPattern, v.start / vm.VERT_SIZE, v.length);
+
+        v = vm.getVBO(VBOManager.CUBE_LEFT);
+        g.glDrawArrays(v.vertexPattern, v.start / vm.VERT_SIZE, v.length);
+
+        v = vm.getVBO(VBOManager.CUBE_RIGHT);
+        g.glDrawArrays(v.vertexPattern, v.start / vm.VERT_SIZE, v.length);
+
+        v = vm.getVBO(VBOManager.CUBE_FRONT);
+        g.glDrawArrays(v.vertexPattern, v.start / vm.VERT_SIZE, v.length);
+
+        v = vm.getVBO(VBOManager.CUBE_BACK);
+        g.glDrawArrays(v.vertexPattern, v.start / vm.VERT_SIZE, v.length);
+    }
+
+    void drawCube(int texID) {
+
+        g.glBindTexture(GL4.GL_TEXTURE_2D, Assets.joglTexLocs[texID]);
+
         VBO v;
         v = vm.getVBO(VBOManager.CUBE_TOP);
         g.glDrawArrays(v.vertexPattern, v.start / vm.VERT_SIZE, v.length);

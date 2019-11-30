@@ -7,20 +7,18 @@ import com.jogamp.opengl.awt.*;
 // TYPE = 1
 class Player extends Thing {
 
-    ArrayList<int[]> path;
-    // list of action IDs to be completed in sequence
-    ArrayList<int[]> targets;
-    
-
-    float dx, dy;
+    ArrayList<Action> moveSet;
+    ArrayList<Action> actions;
 
     Player() {
-        super(0, 0, 0);
+        this(0, 0, 0);
+
     }
 
     Player(int x, int y, int z) {
         super(x, y, z);
-        targets = new ArrayList<int[]>();
+        actions = new ArrayList<Action>();
+        moveSet = MoveSets.basicMoves;
 
     }
 
@@ -32,137 +30,73 @@ class Player extends Thing {
     @Override
     void draw(GLGraphics g) {
         g.setDrawLoc(getX(), getY(), getZ());
-        g.drawMesh(VBOManager.MAN);
+        g.drawMesh(VBOManager.MAN, Assets.MAN_TEX);
 
-        if (path != null) {
-            // System.out.println("path != null");
-            for (int[] v : path) {
-                g.setDrawLoc(v[0], v[1], v[2]);
-                g.setColorLoc(0, 0, 1, 0.5f);
-                g.drawCube();
-            }
-        }
+        // if (path != null) {
+        //     // System.out.println("path != null");
+        //     for (int[] v : path) {
+        //         g.setDrawLoc(v[0], v[1], v[2]);
+        //         g.setColorLoc(0, 0, 1, 0.5f);
+        //         g.drawCube();
+        //     }
+        // }
 
     }
 
     @Override
-    void update() {
-        /*
-        if (currentAction == null) {
-            if (actions.size() > 0) {
-                // currentAction = Action.getByID(actions.get(0));
-                // actions.remove(0);
-                // currentAction.execute(this);
-            }
-        } else if (!currentAction.isDone()) { // maybe do this first?
-            currentAction.execute(this);
-            if (currentAction.isDone()) {
-                currentAction = null;
+    void update(World w) {
+        // System.out.println("actions null: " + (actions == null));
+        if (dx != 0 || dy != 0 || dz != 0){
+            // System.out.println("moving offset");
+            dx -= 10*Math.signum(dx);
+            dy -= 10*Math.signum(dy);
+            dz -= 10*Math.signum(dz);
+
+        } else if (actions.size() > 0) {
+            // System.out.println("player action");
+            if (!actions.get(0).exe(w, this)){
+                System.out.println("failed action");
+                nextAction();
             }
         }
-        */
+        // System.out.println("updated player");
+    }
 
+    void doAction(World w, Action a){
+        a.exe(w, this);
+    }
+
+    void nextAction(){
+        if (actions.size() > 0){
+            actions.remove(0);
+        }
     }
 
     @Override
     void rightClick(World w, int x, int y, int z) {
         // if (w.get(x, y, z) != null) {
-        if (w.get(x, y, z - 1) != null && w.get(x, y, z - 1).getType() == Thing.CELL && w.get(x, y, z) == null) {
-
-            // System.out.println("right click in player");
-            path = Path.findPath(w, getLocX(), getLocY(), getLocZ(), x, y, z);
+        System.out.println("x " + x + " y " + y + " z " + z);
+        if (w.get(x, y, z - 1) != null && w.get(x, y, z) == null) {
+            actions.add(GameState.moveSets.getPathAct(w, x, y, z));
+        } else {
+            System.out.println("failed click check");
         }
         // }
 
     }
 
     @Override
-    ArrayList<int[]> getPossibleSteps(World w, int x, int y, int z) {
+    ArrayList<Action> getPossibleSteps(World w, int xi, int yi, int zi) {
         // System.out.println("got steps from " + x + " " + y + " " + z);
 
-        ArrayList<int[]> steps = new ArrayList<int[]>();
+        ArrayList<Action> steps = new ArrayList<Action>();
 
-        // Horizontal & down steps
-        // x+1 step
-        if (w.get(x + 1, y, z) == null) {
-            if (w.get(x + 1, y, z - 1) != null) {
-                int[] step = { x + 1, y, z };
-                steps.add(step);
-            } else if (w.get(x + 1, y, z - 2) != null) {
-                int[] step = { 
-                    x + 1, y, z - 1,
-                    x + 1, y, z 
-                };
-                steps.add(step);
-            }
-        }
-        // x-1 step
-        if (w.get(x - 1, y, z) == null) {
-            if (w.get(x - 1, y, z - 1) != null) {
-                int[] step = { x - 1, y, z };
-                steps.add(step);
-            } else if (w.get(x - 1, y, z - 2) != null) {
-                int[] step = { 
-                    x - 1, y, z - 1,
-                    x - 1, y, z
-                };
-                steps.add(step);
-            }
-        }
-        // y+1 step
-        if (w.get(x, y + 1, z) == null) {
-            if (w.get(x, y + 1, z - 1) != null) {
-                int[] step = { x, y + 1, z };
-                steps.add(step);
-            } else if (w.get(x, y + 1, z - 2) != null) {
-                int[] step = { 
-                    x, y + 1, z - 1,
-                    x, y + 1, z 
-                };
-                steps.add(step);
-            }
-        }
-        // y-1 step
-        if (w.get(x, y - 1, z) == null) {
-            if (w.get(x, y - 1, z - 1) != null) {
-                int[] step = { x, y - 1, z };
-                steps.add(step);
-            } else if (w.get(x, y - 1, z - 2) != null) {
-                int[] step = { 
-                    x, y - 1, z - 1,
-                    x, y - 1, z 
-                };
-                steps.add(step);
-            }
-        }
-
-        // climbing up steps
-        if (w.get(x, y, z + 1) == null) {
-            if (w.get(x + 1, y, z) != null && w.get(x + 1, y, z + 1) == null) {
-                int[] step = { x + 1, y, z + 1, x, y, z + 1 };
-                steps.add(step);
-            }
-            // x-1 step
-            if (w.get(x - 1, y, z) != null && w.get(x - 1, y, z + 1) == null) {
-                int[] step = { x - 1, y, z + 1, x, y, z + 1 };
-                steps.add(step);
-            }
-            // y+1 step
-            if (w.get(x, y + 1, z) != null && w.get(x, y + 1, z + 1) == null) {
-                int[] step = { x, y + 1, z + 1, x, y, z + 1 };
-                steps.add(step);
-            }
-            // y-1 step
-            if (w.get(x, y - 1, z) != null && w.get(x, y - 1, z + 1) == null) {
-                int[] step = { x, y - 1, z + 1, x, y, z + 1 };
-                steps.add(step);
+        for (Action a : moveSet){
+            if (a.check(w, xi, yi, zi)){
+                steps.add(a);
             }
         }
 
         return steps;
-    }
-
-    void takeSteps(ArrayList<int[]> steps){
-        
     }
 }

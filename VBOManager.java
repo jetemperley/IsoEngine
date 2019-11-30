@@ -21,7 +21,7 @@ public class VBOManager {
     private ArrayList<float[]> arrs;
     private int vboRef;
     // number of floats per vertex
-    final int VERT_SIZE = 6;
+    final int VERT_SIZE = 8;
     static int CUBE_TOP = 0, CUBE_BOT = 1, CUBE_LEFT = 2;
     static int CUBE_RIGHT = 3, CUBE_FRONT = 4, CUBE_BACK = 5;
     static int DIAMOND = 6, TREE = 7, ROCK = TREE+1, MAN = ROCK+1;

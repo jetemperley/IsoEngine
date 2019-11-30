@@ -10,6 +10,7 @@ public class Camera {
     // GRID_SIZE is the pixel size of one world unit length on the projection screen
     // assumes 1:1 aspect ratio
     public static float CLIP_EDGE = 20, GRID_SIZE, SCREEN_ASPECT = 1, CLIP_DEPTH = 50;
+    private final float MIN_CLIP_EDGE = 0.5f, MAX_CLIP_EDGE = 40;
 
     public Camera() {
         
@@ -52,8 +53,18 @@ public class Camera {
 
     public void elevate(float radians){
         angles = Mat4Utl.getRotations(view);
+        // System.out.println("x = " + angles[0] + ", y = " + angles[1] + ", z = " + angles[2]);
         rotate(radians, (float)Math.cos((double)angles[2]), (float)Math.sin((double)angles[2]), 0);
         // System.out.println("x = " + angles[0] + ", y = " + angles[1] + ", z = " + angles[2]);
+        angles = Mat4Utl.getRotations(view);
+
+        if (angles[0] < 0 && angles[0] > -1.5f){
+            rotate(angles[0], (float)Math.cos((double)angles[2]), (float)Math.sin((double)angles[2]), 0);
+        } else if (angles[0] <= -1.5f){
+            float d = angles[0] + (float)Math.PI;
+            rotate(d, (float)Math.cos((double)angles[2]), (float)Math.sin((double)angles[2]), 0);
+        }
+
     }
 
     // produces the rotation of the view in radians
@@ -122,6 +133,11 @@ public class Camera {
 
     void zoom(int zoom){
         CLIP_EDGE+=zoom*0.5;
+        if (CLIP_EDGE < MIN_CLIP_EDGE){
+            CLIP_EDGE = MIN_CLIP_EDGE;
+        } else if (CLIP_EDGE > MAX_CLIP_EDGE){
+            CLIP_EDGE = MAX_CLIP_EDGE;
+        }
         GRID_SIZE = IsoEngine.WIDTH/(CLIP_EDGE*2);
         updateProjection();
         updateCamera();
