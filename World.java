@@ -4,7 +4,7 @@ public class World {
 
     private float seed;
     final static int WORLD_SIZE = 4;
-    // grid of chunks
+    // grid of chunks[y][x]
     Chunk[][] chunks;
     Thing selected = null;
     // Cell[y][x][vert] holds list of visible cells for each [y][x]chunck
@@ -27,9 +27,9 @@ public class World {
 
                 chunks[y][x].visiCells = new ArrayList<Cell>();
                 chunks[y][x].things = new ArrayList<Thing>();
-                System.out.println("started get visi " + x + " " + y);
+                // System.out.println("started get visi " + x + " " + y);
                 chunks[y][x].visiCells = getVisiCells(x, y);
-                System.out.println("finished get visi " + x + " " + y);
+                // System.out.println("finished get visi " + x + " " + y);
                 chunks[y][x].things = getThings(x, y);
 
             }
@@ -63,14 +63,14 @@ public class World {
     // teleports piece at xyz by xiyizi
     void move(Thing t, int xi, int yi, int zi) {
         if (get(t.x + xi, t.y + yi, t.z + zi) == null) {
-            setThing(t.x + xi, t.y + yi, t.z + zi, t);
-            setThing(t.x, t.y, t.z, null);
+            chunks[(t.y + yi) / Chunk.SIZE][(t.x + xi) / Chunk.SIZE].data[t.z + zi][(t.y + yi) % Chunk.SIZE][(t.x + xi) % Chunk.SIZE] = t;
+            chunks[t.y / Chunk.SIZE][t.x / Chunk.SIZE].data[t.z][t.y % Chunk.SIZE][t.x % Chunk.SIZE] = null;
+            t.moveBy(xi, yi, zi);
+
         }
-        t.x += xi;
-        t.y += yi;
-        t.z += zi;
     }
 
+    // depracted
     void updateCells() {
         System.out.println("update cells");
         for (int y = 0; y < chunks.length; y++) {
@@ -82,7 +82,7 @@ public class World {
         }
     }
 
-    void updateThingsList() {
+    void updateThings() {
         for (int y = 0; y < chunks.length; y++) {
             for (int x = 0; x < chunks[y].length; x++) {
 
@@ -92,15 +92,17 @@ public class World {
         }
     }
 
+    // sets the selected thing to the thing at xyz
     void select(int x, int y, int z) {
         try {
-            selected = chunks[y / Chunk.SIZE][x / Chunk.SIZE].data[z][y % Chunk.SIZE][x % Chunk.SIZE];
+            selected = get(x, y, z);
             // System.out.println(selected.x + " " + selected.y + " " + selected.z);
         } catch (ArrayIndexOutOfBoundsException e) {
             selected = null;
         }
     }
 
+    // gets the thing at absolute position xyz
     Thing get(int x, int y, int z) {
         try {
             return chunks[y / Chunk.SIZE][x / Chunk.SIZE].data[z][y % Chunk.SIZE][x % Chunk.SIZE];
@@ -110,10 +112,24 @@ public class World {
         }
     }
 
+    // overrides thing at xyz with thing t, updating visicells and things list
     void setThing(int x, int y, int z, Thing t) {
         try {
+            Thing old = get(x, y, z);
+            if (old != null) {
+                if (old.getType() == Thing.CELL) {
+                    chunks[y / Chunk.SIZE][x / Chunk.SIZE].visiCells.remove((Cell) old);
+                } else {
+                    chunks[y / Chunk.SIZE][x / Chunk.SIZE].things.remove(old);
+                }
+            }
             chunks[y / Chunk.SIZE][x / Chunk.SIZE].data[z][y % Chunk.SIZE][x % Chunk.SIZE] = t;
-            chunks[y / Chunk.SIZE][x / Chunk.SIZE].visiCells = getVisiCells(x / Chunk.SIZE, y / Chunk.SIZE);
+            // update visibility
+            if (t != null) {
+                t.setLoc(x, y, z);
+            }
+            updateSurroundings(x, y, z);
+
         } catch (ArrayIndexOutOfBoundsException e) {
             System.out.println("setThing out of bounds");
         }
@@ -124,15 +140,31 @@ public class World {
         return WORLD_SIZE * Chunk.SIZE;
     }
 
-    void updateVisiCell(int x, int y, int z) {
-        Thing t = get(x, y, z);
-        if (t.getType() == Thing.CELL) {
+    void updateSurroundings(int x, int y, int z) {
 
-        }
+        updateVisiStatus(get(x, y, z));
+        updateVisiStatus(get(x + 1, y, z));
+        updateVisiStatus(get(x - 1, y, z));
+        updateVisiStatus(get(x, y + 1, z));
+        updateVisiStatus(get(x, y - 1, z));
+        updateVisiStatus(get(x, y, z + 1));
+        updateVisiStatus(get(x, y, z - 1));
 
     }
 
-    
+    void updateVisiStatus(Thing t) {
+        if (t != null && t.getType() == Thing.CELL) {
+            Cell c = (Cell) t;
+            c.updateFaces(this);
+            int xc = c.x / Chunk.SIZE;
+            int yc = c.y / Chunk.SIZE;
+            if (c.isVisible() && !chunks[yc][xc].visiCells.contains(c)) {
+                chunks[yc][xc].visiCells.add(c);
+            } else if (!c.isVisible()) {
+                chunks[yc][xc].visiCells.remove(c);
+            }
+        }
+    }
 
     ArrayList<Cell> getVisiCells(int chunkx, int chunky) {
 
@@ -145,25 +177,19 @@ public class World {
                     // if the thing is a block
                     if (get(x, y, z) != null && get(x, y, z).getType() == Thing.CELL) {
                         // check if any any of teh edges are open to air (open to a null)
+                        try {
+                            if (get(x + 1, y, z).getType() != Thing.CELL || get(x, y + 1, z).getType() != Thing.CELL
+                                    || get(x, y, z + 1).getType() != Thing.CELL
+                                    || get(x - 1, y, z).getType() != Thing.CELL
+                                    || get(x, y - 1, z).getType() != Thing.CELL
+                                    || get(x, y, z - 1).getType() != Thing.CELL) {
 
-                        // if (get(x + 1, y, z) == null || get(x, y + 1, z) == null || get(x, y, z + 1) == null
-                        //         || get(x - 1, y, z) == null || get(x, y - 1, z) == null || get(x, y, z - 1) == null) {
-                        //     locs.add((Cell) get(x, y, z));
-                        //     // System.out.println("added cell " + x + " " + y + " " + z);
+                                locs.add((Cell) get(x, y, z));
 
-                        // }
-                        try{
-                            if (get(x + 1, y, z).getType() != Thing.CELL || get(x, y + 1, z).getType() != Thing.CELL || get(x, y, z + 1).getType() != Thing.CELL
-                                || get(x - 1, y, z).getType() != Thing.CELL || get(x, y - 1, z).getType() != Thing.CELL || get(x, y, z - 1).getType() != Thing.CELL){
-                                
-                                locs.add((Cell)get(x, y, z));
-                                
                             }
-                        } catch (NullPointerException e){
-                            locs.add((Cell)get(x, y, z));
+                        } catch (NullPointerException e) {
+                            locs.add((Cell) get(x, y, z));
                         }
-
-                        
 
                     }
 

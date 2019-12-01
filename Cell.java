@@ -41,13 +41,21 @@ public class Cell extends Thing {
     private void updateFace(World w, int face, int xi, int yi, int zi){
         
         try{
-            if (get(x + xi, y + yi, z + zi).getType() != Thing.CELL){
+            if (w.get(x + xi, y + yi, z + zi).getType() != Thing.CELL){
                 faces[face] = true;
             } else {
                 faces[face] = false;
             }
         } catch (NullPointerException e){
-            faces[face] = false;
+            faces[face] = true;
         }
+    }
+    boolean isVisible(){
+        for (boolean b : faces){
+            if (b){
+                return b;
+            }
+        }
+        return false;
     }
 }

@@ -28,17 +28,7 @@ class Menu {
         for (MButton but : butts) {
             but.draw(g, this);
         }
-        // System.out.println((int)(Game.mouseX/cellSizePixels) + " " +
-        // (int)(Game.mouseY/cellSizePixels) + " " + g.getDepthAt(Game.mouseX,
-        // Game.mouseY, buffer));
-        // if (g.getDepthAt(Game.mouseX, Game.mouseY, buffer) != 1.0){
-        // hovering = true;
-        // //
-        // menu[(int)(Game.mouseY/cellSizePixels)][(int)(Game.mouseX/cellSizePixels)].highlight(g,
-        // this);
-        // } else {
-        // hovering = false;
-        // }
+        
 
         if (hovered != null) {
             hovered.highlight(g, this, 1, 0, 0, 0.5f);
