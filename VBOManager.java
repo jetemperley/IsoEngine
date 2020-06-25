@@ -21,10 +21,10 @@ public class VBOManager {
     private ArrayList<float[]> arrs;
     private int vboRef;
     // number of floats per vertex
-    final int VERT_SIZE = 8;
+    final int VERT_SIZE = 14;
     static int CUBE_TOP = 0, CUBE_BOT = 1, CUBE_LEFT = 2;
     static int CUBE_RIGHT = 3, CUBE_FRONT = 4, CUBE_BACK = 5;
-    static int DIAMOND = 6, TREE = 7, ROCK = TREE+1, MAN = ROCK+1;
+    static int TREE = 6, ROCK = TREE+1, MAN = ROCK+1;
     static VBOManager manager;
 
     VBOManager(int vboID) {
@@ -43,12 +43,10 @@ public class VBOManager {
         this.add("cubeRight", GeoVerts.getRightVerts(), GL.GL_TRIANGLE_STRIP);
         this.add("cubeFront", GeoVerts.getFrontVerts(), GL.GL_TRIANGLE_STRIP);
         this.add("cubeBack", GeoVerts.getBackVerts(), GL.GL_TRIANGLE_STRIP);
-        
-        this.add("diamond", GeoVerts.getDiamondVerts(), GL.GL_TRIANGLES);
 
-        this.add("tree", Assets.meshs.get(0), GL.GL_TRIANGLES);
-        this.add("rock", Assets.meshs.get(1), GL.GL_TRIANGLES);
-        this.add("man", Assets.meshs.get(2), GL.GL_TRIANGLES);
+        this.add("tree", Assets.meshs.get(0).verts, GL.GL_TRIANGLES);
+        this.add("rock", Assets.meshs.get(1).verts, GL.GL_TRIANGLES);
+        this.add("man", Assets.meshs.get(2).verts, GL.GL_TRIANGLES);
     }
 
     VBO getVBO(String name) {

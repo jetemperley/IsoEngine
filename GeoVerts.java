@@ -94,6 +94,7 @@ public class GeoVerts {
         return out;
     }
 
+    // unused
     static float[] getFaceTexCoords(){
 
         float[] arr = {
@@ -107,6 +108,7 @@ public class GeoVerts {
 
     }
 
+    // coord and norm, 4, 4
     private static float[] getTopFaceVerts() {
 
         float[] arr = { 
@@ -130,13 +132,15 @@ public class GeoVerts {
 
         float[] arr = transformSet(getTopFaceVerts(), mat);
         arr = removeEvery4th(arr);
-        float[] f = addTexCoords(arr, 6);
+        float[] f = addCubeTexCoords(arr, 6);
+        f = addBlankBoneWeights(f, 8);
         return f;
     }
 
     static float[] getTopVerts() {
         float[] arr = removeEvery4th(getTopFaceVerts());
-        float[] f = addTexCoords(arr, 6);
+        float[] f = addCubeTexCoords(arr, 6);
+        f = addBlankBoneWeights(f, 8);
         return f;
     }
 
@@ -147,7 +151,8 @@ public class GeoVerts {
 
         float[] arr = transformSet(getTopFaceVerts(), mat);
         arr = removeEvery4th(arr);
-        float[] f = addTexCoords(arr, 6);
+        float[] f = addCubeTexCoords(arr, 6);
+        f = addBlankBoneWeights(f, 8);
         return f;
     }
 
@@ -158,7 +163,8 @@ public class GeoVerts {
 
         float[] arr = transformSet(getTopFaceVerts(), mat);
         arr = removeEvery4th(arr);
-        float[] f = addTexCoords(arr, 6);
+        float[] f = addCubeTexCoords(arr, 6);
+        f = addBlankBoneWeights(f, 8);
         return f;
     }
 
@@ -169,7 +175,8 @@ public class GeoVerts {
 
         float[] arr = transformSet(getTopFaceVerts(), mat);
         arr = removeEvery4th(arr);
-        float[] f = addTexCoords(arr, 6);
+        float[] f = addCubeTexCoords(arr, 6);
+        f = addBlankBoneWeights(f, 8);
         return f;
     }
 
@@ -180,8 +187,31 @@ public class GeoVerts {
 
         float[] arr = transformSet(getTopFaceVerts(), mat);
         arr = removeEvery4th(arr);
-        float[] f = addTexCoords(arr, 6);
+        float[] f = addCubeTexCoords(arr, 6);
+        f = addBlankBoneWeights(f, 8);
         return f;
+    }
+
+    // adds six 0s every stride (three 0s for bones and three 0s for weights)
+    // TODO make each cubes first boneID 0 and weight 1
+    static float[] addBlankBoneWeights(float[] data, int stride){
+
+        int n = data.length/stride;
+        float[] arr = new float[n*(stride+6)];
+        int k = 0;
+        for (int i = 0; i < n; i++){
+            for (int j = 0; j < stride;j++){
+                arr[i*stride + j + k] = data[i*stride + j];
+            }
+            for (int j = 0 ; j < 6; j++){
+                arr[(i+1)*stride + j + k] = 0;
+            }
+            arr[(i+1)*stride + k + 3] = 1.0f;
+            k+=6;
+            
+        }
+        
+        return arr;
     }
 
     static float[] interleave(float[] verts, float[] normals){
@@ -227,7 +257,50 @@ public class GeoVerts {
         
     }
 
-    static float[] addTexCoords(float[] verts, int stride){
+    // creates a new array by insterting bsize elements from b into every asize elements of a
+    // that is, if asize = 4, and bsize = 3
+    // returns a, a, a, a, b, b, b, a, a, a, a, b, b, b, a, a, a, a...
+    // requires that a.length/asize == b.length/bsize
+    static float[] interleave(float[] a, int asize, float[] b, int bsize){
+        // System.out.println("interleave Ratio A: " + (a.length/asize));
+        // System.out.println("interleave Ratio B: " + (b.length/bsize));
+        float[] arr = new float[a.length + b.length];
+
+        int k = 0;
+        for (int i = 0; i < a.length; i += asize){
+            for (int j = 0; j < asize; j++){
+                arr[i + j + k] = a[i + j]; 
+            }
+            for (int j = 0; j < bsize; j++){
+                arr[i + j + k] = b[k + j];
+            }
+            k+=bsize;
+        }
+        
+        return arr;
+    }
+
+    static float[] interleave2(float[] a, int asize, float[] b, int bsize){
+        // System.out.println("interleave Ratio A: " + (a.length/asize));
+        // System.out.println("interleave Ratio B: " + (b.length/bsize));
+        float[] arr = new float[a.length + b.length];
+
+        int n = a.length/asize;
+        for (int i = 0; i < n; i++){
+            for(int j = 0; j < asize; j++){
+                arr[i*(asize+bsize) + j] = a[i*asize + j];
+                // System.out.print(arr[i*(asize+bsize) + j] + "_");
+            }
+            for(int j = 0; j < bsize; j++){
+                arr[i*(asize+bsize) + asize + j] = b[i*bsize + j];
+            }
+        }
+        
+        return arr;
+    }
+
+
+    static float[] addCubeTexCoords(float[] verts, int stride){
 
         // System.out.println("verts " + (verts.length/6));
 

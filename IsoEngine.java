@@ -32,6 +32,7 @@ public class IsoEngine extends GLCanvas implements GLEventListener, ActionListen
    // and 128-130 are mouse buttons
    boolean[] keyPressFlags, keyTypedFlags;
    final static int KEY_COUNT = 128, MOUSE_KEY_COUNT = 3, N_KEYS = KEY_COUNT+MOUSE_KEY_COUNT, MOUSE_KEY_OFFSET = KEY_COUNT-1;
+   final static int FRAME_TIME = 25;
    int typeDelay = 0;
 
    public static void main(String[] args) {
@@ -58,7 +59,7 @@ public class IsoEngine extends GLCanvas implements GLEventListener, ActionListen
       GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
       gds = ge.getScreenDevices();
 
-      timer = new javax.swing.Timer(25, this);
+      timer = new javax.swing.Timer(FRAME_TIME, this);
 
       this.addGLEventListener(this);
       this.setSize(WIDTH, HEIGHT);

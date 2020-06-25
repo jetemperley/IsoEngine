@@ -26,6 +26,13 @@ public class Cell extends Thing {
     @Override
     void draw(GLGraphics g) {
         g.setDrawLoc(getLocX(), getLocY(), getLocZ());
+        g.g.glActiveTexture(GL4.GL_TEXTURE0 + 1);
+        g.g.glBindTexture(GL4.GL_TEXTURE_2D, Assets.joglTexLocs[Assets.DIRT]);
+        // g.g.glEnable(GL4.GL_TEXTURE_CUBE_MAP_SEAMLESS);
+        // g.g.glEnable(GL4.GL_TEXTURE_GEN_S);
+        // g.g.glEnable(GL4.GL_TEXTURE_GEN_T);
+        // g.g.glEnable(GL4.GL_TEXTURE_GEN_R);
+        // g.g.glEnable(GL4.GL_TEXTURE_CUBE_MAP);
         g.drawCube(faces);
     }
 
@@ -38,16 +45,25 @@ public class Cell extends Thing {
         updateFace(w, Cell.BACK_FACE, 0, 1, 0);
     }
 
-    private void updateFace(World w, int face, int xi, int yi, int zi){
-        
-        try{
-            if (get(x + xi, y + yi, z + zi).getType() != Thing.CELL){
+    private void updateFace(World w, int face, int xi, int yi, int zi) {
+
+        try {
+            if (w.get(x + xi, y + yi, z + zi).getType() != Thing.CELL) {
                 faces[face] = true;
             } else {
                 faces[face] = false;
             }
-        } catch (NullPointerException e){
-            faces[face] = false;
+        } catch (NullPointerException e) {
+            faces[face] = true;
         }
+    }
+
+    boolean isVisible() {
+        for (boolean b : faces) {
+            if (b) {
+                return b;
+            }
+        }
+        return false;
     }
 }

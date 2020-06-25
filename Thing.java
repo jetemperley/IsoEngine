@@ -12,7 +12,7 @@ abstract class Thing {
     // offset to absolute location (animation purposes)
     float dx = 0, dy = 0, dz = 0;
 
-    static int UNSPECIFIED = -1, CELL = 0, PLAYER = 1;
+    static int UNSPECIFIED = -1, CELL = 0, PLAYER = 1, ROCK = 2, TREE = 3;
 
     Thing(){
         this(0, 0, 0);
@@ -37,12 +37,10 @@ abstract class Thing {
 
     }
 
-    int getType() {
-        return UNSPECIFIED;
-    }
+    abstract int getType();
 
-    void draw(GLGraphics g) {
-
+    void draw(GLGraphics g){
+        g.setPV(g.cam.getCamera());
     }
 
     void update(World w){
@@ -77,6 +75,12 @@ abstract class Thing {
         this.x = x;
         this.y = y;
         this.z = z;
+    }
+
+    void moveBy(int x, int y, int z){
+        this.x += x;
+        this.y += y;
+        this.z += z;
     }
 
 }

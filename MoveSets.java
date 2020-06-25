@@ -45,7 +45,7 @@ class MoveSets {
         }
 
         public boolean check(World w, int xp, int yp, int zp) {
-            if (w.get(xp + x, yp + y, zp) != null) {
+            if (w.get(xp + x, yp + y, zp) != null && w.get(xp + x, yp + y, zp).getType() == Thing.CELL) {
                 if (w.get(xp + x, yp + y, zp + z) == null) {
                     if (w.get(xp, yp, zp + z) == null) {
                         return true;
@@ -80,7 +80,7 @@ class MoveSets {
         public boolean check(World w, int xp, int yp, int zp) {
             if (w.get(xp + x, yp + y, zp) == null) {
                 if (w.get(xp + x, yp + y, zp + z) == null) {
-                    if (w.get(xp + x, yp + y, zp + z -1) != null) {
+                    if (w.get(xp + x, yp + y, zp + z -1) != null && w.get(xp + x, yp + y, zp + z -1).getType() == Thing.CELL) {
                         return true;
                     }
                 }
@@ -110,7 +110,7 @@ class MoveSets {
 
         public boolean check(World w, int xp, int yp, int zp) {
             if (w.get(xp + x, yp + y, zp) == null) {
-                if (w.get(xp + x, yp + y, zp -1) != null) {
+                if (w.get(xp + x, yp + y, zp -1) != null && w.get(xp + x, yp + y, zp -1).getType() == Thing.CELL) {
                     return true;
                 }
             }
