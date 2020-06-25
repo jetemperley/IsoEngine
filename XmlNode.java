@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Represents a node in an XML file. This contains the name of the node, a map
@@ -22,6 +23,13 @@ public class XmlNode {
 
 	protected XmlNode(String name) {
 		this.name = name;
+	}
+
+	public void printChildren(){
+		Set<String> names = childNodes.keySet();
+		for(String s : names){
+			System.out.println(s);
+		}
 	}
 
 	/**

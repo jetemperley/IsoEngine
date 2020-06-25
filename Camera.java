@@ -3,7 +3,7 @@ import com.jogamp.opengl.math.Matrix4;
 
 public class Camera {
     
-    Matrix4 view, projection, camera, identity;
+    Matrix4 view, projection, camera, temp;
     float xoff = 0, yoff = 0, zoff = 0;
     private float[] angles;
 
@@ -18,8 +18,7 @@ public class Camera {
         view = new Matrix4();
         camera = new Matrix4();
         projection = new Matrix4();
-        identity = new Matrix4();
-        identity.loadIdentity();
+        temp = new Matrix4();
 
         initView();
         projection.loadIdentity();
@@ -46,9 +45,26 @@ public class Camera {
         updateCamera();
     }
 
-    public float[] getCamera(){
+    Matrix4 getCamera(){
         updateCamera();
-        return camera.getMatrix();
+        temp.loadIdentity();
+        temp.multMatrix(camera);
+        // temp.translate(xoff, yoff, zoff);
+        return temp;
+    }
+
+    Matrix4 getView(){
+        temp.loadIdentity();
+        temp.multMatrix(view);
+        temp.translate(xoff, yoff, zoff);
+        return temp;
+    }
+
+    Matrix4 getPVRotationMatrix(){
+        temp.loadIdentity();
+        temp.multMatrix(projection);
+        temp.multMatrix(view);
+        return temp;
     }
 
     public void elevate(float radians){

@@ -18,15 +18,15 @@ import java.util.*;
 public class Assets {
 
     static ArrayList<Texture> texs;
-    static ArrayList<float[]> meshs;
+    static ArrayList<Mesh> meshs;
     static int[] joglTexLocs;
     // texture asset IDs
-    static int SMILE = 0, PICK = 1, SELECT = 2, WALK = 3, PLUS = 4, GRASS = 5,
-        DIRT = 6, MAN_TEX = 7;
+    static int SMILE = 0, PICK = 1, SELECT = 2, WALK = 3, PLUS = 4, GRASS = 5, DIRT = 6, MAN_TEX = 7;
+    static int CUBE_GRASS = 8;
 
-    Assets() {
+    Assets(GL4 g) {
         texs = new ArrayList<Texture>();
-        meshs = new ArrayList<float[]>();
+        meshs = new ArrayList<Mesh>();
         texs.add(loadTexture("smile.png"));
         texs.add(loadTexture("pick.png"));
         texs.add(loadTexture("select.png"));
@@ -35,20 +35,28 @@ public class Assets {
         texs.add(loadTexture("grass.png"));
         texs.add(loadTexture("dirt.png"));
         texs.add(loadTexture("man_tex.png"));
+        texs.add(loadCubeMap("cube_grass"));
 
         // System.out.println("texs length " + texs.size());
         joglTexLocs = new int[texs.size()];
 
         for (int i = 0; i < joglTexLocs.length; i++) {
-            joglTexLocs[i] = texs.get(i).getTextureObject();
+            joglTexLocs[i] = texs.get(i).getTextureObject(g);
+            System.out.println(joglTexLocs[i]);
+
         }
 
-        float[] f = getData(XmlParser.loadXmlFile("tree.dae"));
-        meshs.add(f);
-        f = getData(XmlParser.loadXmlFile("rock.dae"));
-        meshs.add(f);
-        f = getData(XmlParser.loadXmlFile("man.dae"));
-        meshs.add(f);
+        meshs.add(new Mesh("tree.dae"));
+        meshs.add(new Mesh("rock.dae"));
+        meshs.add(new Mesh("man.dae"));
+
+        // float[] f = getData(XmlParser.loadXmlFile("tree.dae"));
+        // meshs.add(new Mesh(f));
+        // f = getData(XmlParser.loadXmlFile("rock.dae"));
+        // meshs.add(new Mesh(f));
+        // f = getData(XmlParser.loadXmlFile("man.dae"));
+        // meshs.add(new Mesh(f));
+        
 
     }
 
@@ -68,82 +76,43 @@ public class Assets {
         return tex;
     }
 
-    static float[] extractVerticiesFromXML(XmlNode mainNode) {
-        String objectID = mainNode.getChild("library_geometries").getChild("geometry").getChild("mesh")
-                .getChild("vertices").getChild("input").getAttribute("source").substring(1);
+    // loads the textures named top, bot left right front back in bin\name
+    static Texture loadCubeMap(String name) {
 
-        String[] tempPos = mainNode.getChild("library_geometries").getChild("geometry").getChild("mesh")
-                .getChildWithAttribute("source", "id", objectID).getChild("float_array").getData().split(" ");
+        GL4 gl = (GL4) GLContext.getCurrentGL();
+        GLProfile glp = gl.getGLProfile();
+        Texture cubeMap = TextureIO.newTexture(GL4.GL_TEXTURE_CUBE_MAP);
 
-        float[] pos = new float[tempPos.length];
-        for (int i = 0; i < tempPos.length; i++) {
-            pos[i] = Float.parseFloat(tempPos[i]);
-            // System.out.print(pos[i] + " ");
-        }
-        // System.out.println();
-        return pos;
+        // System.out.println("estimated memory " + cubeMap.getEstimatedMemorySize());
 
-    }
+        try {
+            TextureData top = TextureIO.newTextureData(glp, new File(name + "/top.png"), false, "png");
+            TextureData bot = TextureIO.newTextureData(glp, new File(name + "/bot.png"), false, "png");
+            TextureData left = TextureIO.newTextureData(glp, new File(name + "/left.png"), false, "png");
+            TextureData right = TextureIO.newTextureData(glp, new File(name + "/right.png"), false, "png");
+            TextureData front = TextureIO.newTextureData(glp, new File(name + "/front.png"), false, "png");
+            TextureData back = TextureIO.newTextureData(glp, new File(name + "/back.png"), false, "png");
 
-    static float[] extractTrianglesFromXML(XmlNode mainNode, String semantic) {
-        String objectID = mainNode.getChild("library_geometries").getChild("geometry").getChild("mesh")
-                .getChild("triangles").getChildWithAttribute("input", "semantic", semantic).getAttribute("source")
-                .substring(1);
+            // System.out.println("front is null " + (top == null));
 
-        String[] stringData = mainNode.getChild("library_geometries").getChild("geometry").getChild("mesh")
-                .getChildWithAttribute("source", "id", objectID).getChild("float_array").getData().split(" ");
+            cubeMap.updateImage(gl, right, GL4.GL_TEXTURE_CUBE_MAP_POSITIVE_X);
+            cubeMap.updateImage(gl, left, GL4.GL_TEXTURE_CUBE_MAP_NEGATIVE_X);
+            cubeMap.updateImage(gl, top, GL4.GL_TEXTURE_CUBE_MAP_POSITIVE_Z);
+            cubeMap.updateImage(gl, bot, GL4.GL_TEXTURE_CUBE_MAP_NEGATIVE_Z);
+            cubeMap.updateImage(gl, front, GL4.GL_TEXTURE_CUBE_MAP_POSITIVE_Y);
+            cubeMap.updateImage(gl, back, GL4.GL_TEXTURE_CUBE_MAP_NEGATIVE_Y);
 
-        float[] data = new float[stringData.length];
-        for (int i = 0; i < stringData.length; i++) {
-            data[i] = Float.parseFloat(stringData[i]);
-            // System.out.print(pos[i] + " ");
-        }
-        // System.out.println();
-        return data;
-
-    }
-
-    static int[] extractIndecies(XmlNode mainNode) {
-        String[] idxString = mainNode.getChild("library_geometries").getChild("geometry").getChild("mesh")
-                .getChild("triangles").getChild("p").getData().split(" ");
-        int[] idx = new int[idxString.length];
-        for (int i = 0; i < idx.length; i++) {
-            idx[i] = Integer.parseInt(idxString[i]);
-        }
-        return idx;
-    }
-
-    static float[] getData(XmlNode mainNode) {
-        float[] verts = extractVerticiesFromXML(mainNode);
-        float[] norms = extractTrianglesFromXML(mainNode, "NORMAL");
-        float[] texs = extractTrianglesFromXML(mainNode, "TEXCOORD");
-        int[] idx = extractIndecies(mainNode);
-
-        int tris = Integer.parseInt(mainNode.getChild("library_geometries").getChild("geometry").getChild("mesh")
-                .getChild("triangles").getAttribute("count"));
-
-        // 3 floats *3 points per triangle
-        // 2 tcs * 3 points per tri
-        float[] expVerts = new float[tris * 9];
-        float[] expNorms = new float[tris * 9];
-        float[] expTexs = new float[tris * 6];
-        int j = 0;
-        int t = 0;
-        for (int i = 0; i < idx.length; i += 3) {
-            for (int k = 0; k < 3; k++) {
-                expVerts[j] = verts[(idx[i]*3) + k];
-                expNorms[j] = norms[(idx[i + 1]*3) + k];
-                j++;
-            }
-            for(int k = 0; k < 2; k++){
-                expTexs[t] = texs[idx[i+2]*2 + k];
-                t++;
-            }
+        } catch (Exception e) {
+            System.out.println("failed load " + name + " cubemap");
         }
 
-        float[] expanded = GeoVerts.interleave(expVerts, 3, expNorms, 3, expTexs, 2);
+        // System.out.println("estimated memory " + cubeMap.getEstimatedMemorySize());
 
-        return expanded;
+        // gl.glTexParameteri(GL4.GL_TEXTURE_CUBE_MAP, GL4.GL_TEXTURE_WRAP_S, GL4.GL_CLAMP_TO_EDGE);
+        // gl.glTexParameteri(GL4.GL_TEXTURE_CUBE_MAP, GL4.GL_TEXTURE_WRAP_T, GL4.GL_CLAMP_TO_EDGE);
+        // gl.glTexParameteri(GL4.GL_TEXTURE_CUBE_MAP, GL4.GL_TEXTURE_WRAP_R, GL4.GL_CLAMP_TO_EDGE);
+
+        return cubeMap;
     }
 
 }

@@ -35,24 +35,48 @@ public class World {
             }
         }
 
+        addRandomly(new Player());
+        addRandomly(new Player());
+        addRandomly(new Player());
+        addRandomly(new Tree());
+        addRandomly(new Rock());
+        addRandomly(new Tree());
+        addRandomly(new Rock());
+        addRandomly(new Tree());
+        addRandomly(new Rock());
+        addRandomly(new Tree());
+        addRandomly(new Rock());
+        addRandomly(new Tree());
+        addRandomly(new Rock());
+
     }
 
     void draw(GLGraphics g) {
-
+        
         // draw all the chunks
         for (int y = 0; y < chunks.length; y++) {
             for (int x = 0; x < chunks[y].length; x++) {
                 chunks[y][x].update(this);
             }
         }
+
+        g.readyBlockProg();
         for (int y = 0; y < chunks.length; y++) {
             for (int x = 0; x < chunks[y].length; x++) {
-                chunks[y][x].draw(g);
+                chunks[y][x].drawCells(g);
+            }
+        }
+
+        g.readyAnimProg();
+        for (int y = 0; y < chunks.length; y++) {
+            for (int x = 0; x < chunks[y].length; x++) {
+                chunks[y][x].drawThings(g);
             }
         }
 
         // draw the selection cube
         if (selected != null) {
+            g.readyBlockProg();
             g.setColorLoc(0, 1, 0, 0.5f);
             g.setDrawLoc(selected.getX(), selected.getY(), selected.getZ());
             g.drawCube();
@@ -233,7 +257,7 @@ public class World {
         int yc = (int) (Math.random() * World.WORLD_SIZE);
 
         for (int i = Chunk.SIZE - 1; i >= 0; i--) {
-            if ((chunks[yc][xc].data[i][y][x] == null) && (chunks[yc][xc].data[i - 1][y][x] != null)) {
+            if ((chunks[yc][xc].data[i][y][x] == null) && (chunks[yc][xc].data[i - 1][y][x] != null) && (chunks[yc][xc].data[i - 1][y][x].getType() == Thing.CELL)) {
                 // piece.x = xc * World.Chunk.SIZE + x;
                 // piece.y = yc * World.Chunk.SIZE + y;
                 // piece.z = i;
@@ -246,6 +270,7 @@ public class World {
         if (piece.getType() != 0) {
             chunks[piece.getLocY() / Chunk.SIZE][piece.getLocX() / Chunk.SIZE].things.add(piece);
         }
+        // System.out.println("piece at " + piece.getX() + " " + piece.getLocY());
 
     }
 
@@ -287,15 +312,20 @@ public class World {
             }
         }
 
-        void draw(GLGraphics g) {
+        void drawThings(GLGraphics g) {
 
-            g.setColorLoc(0, 0, 0, 1);
-
-            for (Cell c : visiCells) {
-                c.draw(g);
-            }
+            g.setColorLoc(0.5f, 0.5f, 0.5f, 1);
 
             for (Thing c : things) {
+                c.draw(g);
+            }
+        }
+
+        void drawCells(GLGraphics g){
+
+            g.setColorLoc(0.5f, 0.5f, 0.5f, 1);
+
+            for (Cell c : visiCells) {
                 c.draw(g);
             }
         }
@@ -305,5 +335,6 @@ public class World {
         }
 
     }
+
 
 }
