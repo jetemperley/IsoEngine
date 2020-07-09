@@ -45,7 +45,7 @@ public class IsoEngine extends GLCanvas implements GLEventListener, ActionListen
 
    public IsoEngine(GLCapabilities capabilities) {
 
-      super(capabilities);
+      // super(capabilities);
 
       IsoEngine.game = this;
 
@@ -75,7 +75,7 @@ public class IsoEngine extends GLCanvas implements GLEventListener, ActionListen
       frame = new JFrame("Test");
       frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-      // configure layout of content
+      // configure layout of content d
       frame.getContentPane().setLayout(new OverlayLayout(frame.getContentPane()));
 
       // add canvas to frame
