@@ -18,7 +18,7 @@ public class GLGraphics {
 
     // main rendering location and uniforms
     private UIRenderProgram UIprog;
-    private ModelRenderProgram blockProg;
+    private ModelRenderProgram modelProg;
     private AnimatedModelRenderProgram animProg;
     private GLProgram currentProgram;
     private ModelRenderProgram lastModelProgram;
@@ -117,7 +117,7 @@ public class GLGraphics {
 
         // vertex array for the blocks
         g.glBindVertexArray(vao[0]);
-        blockProg = new ModelRenderProgram(g, customTextures[0]);
+        modelProg = new ModelRenderProgram(g, customTextures[0]);
         // vertex array for the menues
         g.glBindVertexArray(vao[1]);
         UIprog = new UIRenderProgram(g, customTextures[1]);
@@ -132,13 +132,13 @@ public class GLGraphics {
         g.glClear(GL4.GL_DEPTH_BUFFER_BIT);
     }
 
-    void readyBlockProg() {
+    void readyModelProg() {
         // vao0 is for the 3d environment renderer
         g.glBindVertexArray(vao[0]);
-        currentProgram = blockProg;
-        lastModelProgram = blockProg;
-        blockProg.ready(g);
-        blockProg.resetUniforms(this);
+        currentProgram = modelProg;
+        lastModelProgram = modelProg;
+        modelProg.ready(g);
+        modelProg.resetUniforms(this);
 
     }
 

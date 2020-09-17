@@ -34,7 +34,7 @@ public abstract class GLProgram{
         projViewLoc = g.glGetUniformLocation(ID, "pv");
         
     }
-
+    
     void initVertAttributes(GL4 g){
         // configure pointer for position
         g.glVertexAttribPointer(0, 3, GL4.GL_FLOAT, false, 56, 0);
@@ -132,6 +132,19 @@ public abstract class GLProgram{
             program[i] = (String) lines.elementAt(i) + "\n";
             // System.out.println(program[i]);
         }
+
+        System.out.println("Reading: " + filename);
+
+        System.out.println("{");
+        for (String s : program){
+            s = s.trim();
+            if (s.length() != 0) {
+                
+                System.out.println( "\"" + s + "\\n\",");
+            }
+        }
+        System.out.println("};");
+
         sc.close();
         return program;
     }

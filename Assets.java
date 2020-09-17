@@ -57,7 +57,6 @@ public class Assets {
         // f = getData(XmlParser.loadXmlFile("man.dae"));
         // meshs.add(new Mesh(f));
         
-
     }
 
     static Texture loadTexture(String textureFileName) {
@@ -103,7 +102,7 @@ public class Assets {
             cubeMap.updateImage(gl, back, GL4.GL_TEXTURE_CUBE_MAP_NEGATIVE_Y);
 
         } catch (Exception e) {
-            System.out.println("failed load " + name + " cubemap");
+            System.out.println("failed to load " + name + " cubemap");
         }
 
         // System.out.println("estimated memory " + cubeMap.getEstimatedMemorySize());

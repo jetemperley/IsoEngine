@@ -36,14 +36,12 @@ public class IsoEngine extends GLCanvas implements GLEventListener, ActionListen
    int typeDelay = 0;
 
    public static void main(String[] args) {
-      final GLProfile profile = GLProfile.get(GLProfile.GL2);
-      GLCapabilities capabilities = new GLCapabilities(profile);
-      capabilities.setDoubleBuffered(true);
-      IsoEngine game = new IsoEngine(capabilities);
+      
+      IsoEngine game = new IsoEngine();
 
    }
 
-   public IsoEngine(GLCapabilities capabilities) {
+   public IsoEngine() {
 
       // super(capabilities);
 
@@ -118,7 +116,7 @@ public class IsoEngine extends GLCanvas implements GLEventListener, ActionListen
       // System.out.println("dispayed");
       // g = (GL4) drawable.getGL().getGL2();
       // super.display(drawable);
-      g = (GL4) GLContext.getCurrentGL();
+      // g = (GL4) GLContext.getCurrentGL();
       checkInput();
 
       state.draw(graphics);
