@@ -35,7 +35,7 @@ class GameState {
 
             // BUG: the initial depth grab is always from 0, 0, events that use this will
             // occur before the first valid depth grab
-            g.readyBlockProg();
+            g.readyModelProg();
             if (getDepth) {
                 lastDepth = g.getDepthAt(IsoEngine.pressX, IsoEngine.pressY);
             }
@@ -89,7 +89,7 @@ class GameState {
         // hovery = (int)(loc[1] - g.cam.zoff);
         // hoverz = (int)(loc[2] - g.cam.zoff);
         
-        g.readyBlockProg();
+        g.readyModelProg();
         g.setCustDrawLoc(loc[0], loc[1], loc[2]);
         g.setPV(g.cam.getCamera());
         g.setColorLoc(1, 0, 0, 0.5f);

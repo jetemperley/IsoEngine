@@ -18,7 +18,7 @@ public class GLGraphics {
 
     // main rendering location and uniforms
     private UIRenderProgram UIprog;
-    private ModelRenderProgram blockProg;
+    private ModelRenderProgram modelProg;
     private AnimatedModelRenderProgram animProg;
     private GLProgram currentProgram;
     private ModelRenderProgram lastModelProgram;
@@ -50,8 +50,6 @@ public class GLGraphics {
         // System.out.println("max uniform locs = " + GL4.GL_MAX_UNIFORM_LOCATIONS);
 
         // init assets
-        
-        
 
         temp = new Matrix4();
 
@@ -70,7 +68,7 @@ public class GLGraphics {
         g.glGenBuffers(vbo.length, vbo, 0);
 
         newWorld = new World();
-        
+
         // set up binds for vao[0], regular render
 
         // shLightCamLoc = g.glGetUniformLocation(shadow_shader, "light_cam");
@@ -99,13 +97,12 @@ public class GLGraphics {
         transOffset.multMatrix(f);
         lightCam2 = new Matrix4();
 
-        
         // FloatBuffer buff = Buffers.newDirectFloatBuffer(GeoVerts.getFaceTexCoords());
         // g.glBufferData(GL4.GL_ARRAY_BUFFER, buff.limit() * 4, buff,
         // GL4.GL_STATIC_DRAW);
 
         assets = new Assets(g);
-        
+
         for (int i : Assets.joglTexLocs) {
             g.glBindTexture(GL4.GL_TEXTURE_2D, i);
             g.glTexParameteri(GL4.GL_TEXTURE_2D, GL4.GL_TEXTURE_MIN_FILTER, GL4.GL_LINEAR_MIPMAP_LINEAR);
@@ -120,7 +117,7 @@ public class GLGraphics {
 
         // vertex array for the blocks
         g.glBindVertexArray(vao[0]);
-        blockProg = new ModelRenderProgram(g, customTextures[0]);
+        modelProg = new ModelRenderProgram(g, customTextures[0]);
         // vertex array for the menues
         g.glBindVertexArray(vao[1]);
         UIprog = new UIRenderProgram(g, customTextures[1]);
@@ -135,13 +132,13 @@ public class GLGraphics {
         g.glClear(GL4.GL_DEPTH_BUFFER_BIT);
     }
 
-    void readyBlockProg() {
+    void readyModelProg() {
         // vao0 is for the 3d environment renderer
         g.glBindVertexArray(vao[0]);
-        currentProgram = blockProg;
-        lastModelProgram = blockProg;
-        blockProg.ready(g);
-        blockProg.resetUniforms(this);
+        currentProgram = modelProg;
+        lastModelProgram = modelProg;
+        modelProg.ready(g);
+        modelProg.resetUniforms(this);
 
     }
 
@@ -222,12 +219,10 @@ public class GLGraphics {
         }
     }
 
-    void drawCube(boolean[] faces, int texID){
+    void drawCube(boolean[] faces, int texID) {
         g.glBindTexture(GL4.GL_TEXTURE_2D, Assets.joglTexLocs[texID]);
         drawCube(faces);
     }
-
-    
 
     void drawMesh(int assetID) {
         vt = vm.getVBO(assetID);
@@ -256,7 +251,7 @@ public class GLGraphics {
         currentProgram.setHighlightColor(g, red, green, blue, alpha);
     }
 
-    void setPV(Matrix4 pv){
+    void setPV(Matrix4 pv) {
         currentProgram.setPV(g, pv);
     }
 
@@ -264,11 +259,11 @@ public class GLGraphics {
         animProg.setBones(this.g, bones);
     }
 
-    void setModelForm(Matrix4 transform){
+    void setModelForm(Matrix4 transform) {
         lastModelProgram.setModelForm(g, transform);
     }
 
-    void setLightDir(int x, int y, int z){
+    void setLightDir(int x, int y, int z) {
         lastModelProgram.setSun(g, x, y, z);
     }
 
