@@ -29,6 +29,19 @@ public class ModelRenderProgram extends GLProgram {
         initVertAttributes(g);
     }
 
+    @Override
+    void initVertexAttributes(){
+        // configure pointer for position
+        g.glVertexAttribPointer(0, 3, GL4.GL_FLOAT, false, 32, 0);
+        g.glEnableVertexAttribArray(0);
+        // config pointer for normals
+        g.glVertexAttribPointer(1, 3, GL4.GL_FLOAT, false, 32, 12);
+        g.glEnableVertexAttribArray(1);
+        // pointer for tex coords
+        g.glVertexAttribPointer(2, 2, GL4.GL_FLOAT, false, 32, 24);
+        g.glEnableVertexAttribArray(2);
+    }
+
     void initUniforms(GL4 g) {
         super.initUniforms(g);
         // get locations for all the uniform variables

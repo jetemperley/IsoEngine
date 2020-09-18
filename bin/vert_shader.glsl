@@ -2,8 +2,6 @@
 layout (location = 0) in vec3 position;
 layout (location = 1) in vec3 normal;
 layout (location = 2) in vec2 texcoord;
-layout (location = 3) in ivec3 boneID;
-layout (location = 4) in vec3 boneWeight;
 
 // layout (binding = 0) uniform samplerCube cubeMap;
 
