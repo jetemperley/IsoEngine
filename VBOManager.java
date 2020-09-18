@@ -37,16 +37,16 @@ public class VBOManager {
     }
 
     private void initVerts() {
-        this.add("cubeTop", GeoVerts.getTopVerts(), GL.GL_TRIANGLE_STRIP);
-        this.add("cubeBot", GeoVerts.getBotVerts(), GL.GL_TRIANGLE_STRIP);
-        this.add("cubeLeft", GeoVerts.getLeftVerts(), GL.GL_TRIANGLE_STRIP);
-        this.add("cubeRight", GeoVerts.getRightVerts(), GL.GL_TRIANGLE_STRIP);
-        this.add("cubeFront", GeoVerts.getFrontVerts(), GL.GL_TRIANGLE_STRIP);
-        this.add("cubeBack", GeoVerts.getBackVerts(), GL.GL_TRIANGLE_STRIP);
+        this.add("cubeTop", GeoVerts.getTopVerts(), GL.GL_TRIANGLE_STRIP, 8);
+        this.add("cubeBot", GeoVerts.getBotVerts(), GL.GL_TRIANGLE_STRIP, 8);
+        this.add("cubeLeft", GeoVerts.getLeftVerts(), GL.GL_TRIANGLE_STRIP, 8);
+        this.add("cubeRight", GeoVerts.getRightVerts(), GL.GL_TRIANGLE_STRIP, 8);
+        this.add("cubeFront", GeoVerts.getFrontVerts(), GL.GL_TRIANGLE_STRIP, 8);
+        this.add("cubeBack", GeoVerts.getBackVerts(), GL.GL_TRIANGLE_STRIP, 8);
 
-        this.add("tree", Assets.meshs.get(0).verts, GL.GL_TRIANGLES);
-        this.add("rock", Assets.meshs.get(1).verts, GL.GL_TRIANGLES);
-        this.add("man", Assets.meshs.get(2).verts, GL.GL_TRIANGLES);
+        this.add("tree", Assets.meshs.get(0).verts, GL.GL_TRIANGLES, 14);
+        this.add("rock", Assets.meshs.get(1).verts, GL.GL_TRIANGLES, 14);
+        this.add("man", Assets.meshs.get(2).verts, GL.GL_TRIANGLES, 14);
     }
 
     VBO getVBO(String name) {
@@ -65,14 +65,25 @@ public class VBOManager {
         return null;
     }
 
-    void add(String name, float[] data, int vertexPattern) {
+    /* 
+    Takes some vertex data and stores it in the list of VBOs.
+
+    @param name : reference name, for reference by a programmer
+    @param data : vertex data (position, normals, tc etc)
+    @param vertexPattern : the pattern of vertex connctions used by OpenGL
+    @param vertSize : the number of float elements that specify one vertex 
+    (e.g. pos' + tcs + norms = 8)
+    
+    */
+    void add(String name, float[] data, int vertexPattern, int vertSize) {
         names.add(name);
         arrs.add(data);
         int start = 0;
         if (vbos.size() > 0) {
-            start = vbos.get(vbos.size() - 1).start + vbos.get(vbos.size() - 1).length * VERT_SIZE;
+            VBO last = vbos.get(vbos.size() - 1);
+            start = last.start + last.length * last.vertSize;
         }
-        vbos.add(new VBO(start, data.length / VERT_SIZE, vertexPattern));
+        vbos.add(new VBO(start, data.length / vertSize, vertexPattern));
         // System.out.println("s " + start + " l " + data.length / 6);
     }
 

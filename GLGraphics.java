@@ -184,6 +184,7 @@ public class GLGraphics {
         g.glActiveTexture(GL4.GL_TEXTURE0);
         g.glBindTexture(GL4.GL_TEXTURE_2D, Assets.joglTexLocs[assetID]);
         vt = vm.getVBO(VBOManager.CUBE_TOP);
+        // g.glDrawArrays(vt.vertexPattern, vt.start / vm.VERT_SIZE, vt.length);
         g.glDrawArrays(vt.vertexPattern, vt.start / vm.VERT_SIZE, vt.length);
     }
 
@@ -359,22 +360,22 @@ public class GLGraphics {
 
         VBO v;
         v = vm.getVBO(VBOManager.CUBE_TOP);
-        g.glDrawArrays(v.vertexPattern, v.start / vm.VERT_SIZE, v.length);
+        g.glDrawArrays(v.vertexPattern, v.start / v.vertSize, v.length);
 
         v = vm.getVBO(VBOManager.CUBE_BOT);
-        g.glDrawArrays(v.vertexPattern, v.start / vm.VERT_SIZE, v.length);
+        g.glDrawArrays(v.vertexPattern, v.start / v.vertSize, v.length);
 
         v = vm.getVBO(VBOManager.CUBE_LEFT);
-        g.glDrawArrays(v.vertexPattern, v.start / vm.VERT_SIZE, v.length);
+        g.glDrawArrays(v.vertexPattern, v.start / v.vertSize, v.length);
 
         v = vm.getVBO(VBOManager.CUBE_RIGHT);
-        g.glDrawArrays(v.vertexPattern, v.start / vm.VERT_SIZE, v.length);
+        g.glDrawArrays(v.vertexPattern, v.start / v.vertSize, v.length);
 
         v = vm.getVBO(VBOManager.CUBE_FRONT);
-        g.glDrawArrays(v.vertexPattern, v.start / vm.VERT_SIZE, v.length);
+        g.glDrawArrays(v.vertexPattern, v.start / v.vertSize, v.length);
 
         v = vm.getVBO(VBOManager.CUBE_BACK);
-        g.glDrawArrays(v.vertexPattern, v.start / vm.VERT_SIZE, v.length);
+        g.glDrawArrays(v.vertexPattern, v.start / v.vertSize, v.length);
     }
 
     void drawCube(int texID) {
@@ -383,22 +384,22 @@ public class GLGraphics {
 
         VBO v;
         v = vm.getVBO(VBOManager.CUBE_TOP);
-        g.glDrawArrays(v.vertexPattern, v.start / vm.VERT_SIZE, v.length);
+        g.glDrawArrays(v.vertexPattern, v.start / v.vertSize, v.length);
 
         v = vm.getVBO(VBOManager.CUBE_BOT);
-        g.glDrawArrays(v.vertexPattern, v.start / vm.VERT_SIZE, v.length);
+        g.glDrawArrays(v.vertexPattern, v.start / v.vertSize, v.length);
 
         v = vm.getVBO(VBOManager.CUBE_LEFT);
-        g.glDrawArrays(v.vertexPattern, v.start / vm.VERT_SIZE, v.length);
+        g.glDrawArrays(v.vertexPattern, v.start / v.vertSize, v.length);
 
         v = vm.getVBO(VBOManager.CUBE_RIGHT);
-        g.glDrawArrays(v.vertexPattern, v.start / vm.VERT_SIZE, v.length);
+        g.glDrawArrays(v.vertexPattern, v.start / v.vertSize, v.length);
 
         v = vm.getVBO(VBOManager.CUBE_FRONT);
-        g.glDrawArrays(v.vertexPattern, v.start / vm.VERT_SIZE, v.length);
+        g.glDrawArrays(v.vertexPattern, v.start / v.vertSize, v.length);
 
         v = vm.getVBO(VBOManager.CUBE_BACK);
-        g.glDrawArrays(v.vertexPattern, v.start / vm.VERT_SIZE, v.length);
+        g.glDrawArrays(v.vertexPattern, v.start / v.vertSize, v.length);
     }
 
     void initShadowProg(GL4 g) {

@@ -132,6 +132,22 @@ public abstract class GLProgram{
             program[i] = (String) lines.elementAt(i) + "\n";
             // System.out.println(program[i]);
         }
+<<<<<<< Updated upstream
+=======
+
+        // System.out.println("Reading: " + filename);
+
+        // System.out.println("{");
+        // for (String s : program){
+        //     s = s.trim();
+        //     if (s.length() != 0) {
+                
+        //         System.out.println( "\"" + s + "\\n\",");
+        //     }
+        // }
+        // System.out.println("};");
+
+>>>>>>> Stashed changes
         sc.close();
         return program;
     }

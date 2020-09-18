@@ -5,19 +5,20 @@ import com.jogamp.opengl.awt.*;
 public class VBO{
 
     // start: the location first INDEX in the buffer
-    // length: the number of VERTECIES SPECIFIED in the sequence 
-    // vbo: a reference to the opengl vbo ID that stores the data  
+    // length: the number of VERTECIES SPECIFIED in the sequence  
+    // vertSize: the number of float elements per vertex (e.g. pos + norm + tc = 8)
     // NOTE cuurently using dublets
-    final int start, length, vertexPattern;
+    final int start, length, vertexPattern, vertSize;
 
-    VBO(int s, int l){
-        this(s, l, GL4.GL_TRIANGLES);
+    VBO(int s, int l, int size){
+        this(s, l, GL4.GL_TRIANGLES, size);
     }
 
-    VBO(int s, int l, int vertexPattern){
+    VBO(int s, int l, int vertexPattern, int size){
         start = s;
         length = l;
         this.vertexPattern = vertexPattern;
+        vertSize = size;
     }
 
 }
