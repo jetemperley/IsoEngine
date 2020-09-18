@@ -30,7 +30,7 @@ public class ModelRenderProgram extends GLProgram {
     }
 
     @Override
-    void initVertexAttributes(){
+    void initVertAttributes(GL4 g){
         // configure pointer for position
         g.glVertexAttribPointer(0, 3, GL4.GL_FLOAT, false, 32, 0);
         g.glEnableVertexAttribArray(0);
