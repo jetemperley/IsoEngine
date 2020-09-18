@@ -133,14 +133,14 @@ public class GeoVerts {
         float[] arr = transformSet(getTopFaceVerts(), mat);
         arr = removeEvery4th(arr);
         float[] f = addCubeTexCoords(arr, 6);
-        f = addBlankBoneWeights(f, 8);
+        // f = addBlankBoneWeights(f, 8);
         return f;
     }
 
     static float[] getTopVerts() {
         float[] arr = removeEvery4th(getTopFaceVerts());
         float[] f = addCubeTexCoords(arr, 6);
-        f = addBlankBoneWeights(f, 8);
+        // f = addBlankBoneWeights(f, 8);
         return f;
     }
 
@@ -152,7 +152,7 @@ public class GeoVerts {
         float[] arr = transformSet(getTopFaceVerts(), mat);
         arr = removeEvery4th(arr);
         float[] f = addCubeTexCoords(arr, 6);
-        f = addBlankBoneWeights(f, 8);
+        // f = addBlankBoneWeights(f, 8);
         return f;
     }
 
@@ -164,7 +164,7 @@ public class GeoVerts {
         float[] arr = transformSet(getTopFaceVerts(), mat);
         arr = removeEvery4th(arr);
         float[] f = addCubeTexCoords(arr, 6);
-        f = addBlankBoneWeights(f, 8);
+        // f = addBlankBoneWeights(f, 8);
         return f;
     }
 
@@ -176,7 +176,7 @@ public class GeoVerts {
         float[] arr = transformSet(getTopFaceVerts(), mat);
         arr = removeEvery4th(arr);
         float[] f = addCubeTexCoords(arr, 6);
-        f = addBlankBoneWeights(f, 8);
+        // f = addBlankBoneWeights(f, 8);
         return f;
     }
 
@@ -188,7 +188,7 @@ public class GeoVerts {
         float[] arr = transformSet(getTopFaceVerts(), mat);
         arr = removeEvery4th(arr);
         float[] f = addCubeTexCoords(arr, 6);
-        f = addBlankBoneWeights(f, 8);
+        // f = addBlankBoneWeights(f, 8);
         return f;
     }
 
