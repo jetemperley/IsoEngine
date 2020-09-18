@@ -14,7 +14,7 @@ uniform vec3 sun_dir;
 uniform mat4 model_form;
 
 out float lighting;
-out vec4 shadow_coord; 
+out vec4 shadow_coord;
 out vec2 tc;
 
 void main(void) {

@@ -60,7 +60,7 @@ public class World {
             }
         }
 
-        g.readyBlockProg();
+        g.readyModelProg();
         for (int y = 0; y < chunks.length; y++) {
             for (int x = 0; x < chunks[y].length; x++) {
                 chunks[y][x].drawCells(g);
@@ -76,7 +76,7 @@ public class World {
 
         // draw the selection cube
         if (selected != null) {
-            g.readyBlockProg();
+            g.readyModelProg();
             g.setColorLoc(0, 1, 0, 0.5f);
             g.setDrawLoc(selected.getX(), selected.getY(), selected.getZ());
             g.drawCube();
