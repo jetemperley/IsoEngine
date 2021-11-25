@@ -213,7 +213,7 @@ public class GLGraphics {
             if (faces[iter]) {
 
                 vt = vm.getVBO(iter);
-                g.glDrawArrays(vt.vertexPattern, vt.start / vm.VERT_SIZE, vt.length);
+                g.glDrawArrays(vt.vertexPattern, vt.start / vt.vertSize, vt.length);
             }
             iter++;
         }

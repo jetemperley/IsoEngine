@@ -133,17 +133,17 @@ public abstract class GLProgram{
             // System.out.println(program[i]);
         }
 
-        System.out.println("Reading: " + filename);
+        // System.out.println("Reading: " + filename);
 
-        System.out.println("{");
-        for (String s : program){
-            s = s.trim();
-            if (s.length() != 0) {
+        // System.out.println("{");
+        // for (String s : program){
+        //     s = s.trim();
+        //     if (s.length() != 0) {
                 
-                System.out.println( "\"" + s + "\\n\",");
-            }
-        }
-        System.out.println("};");
+        //         System.out.println( "\"" + s + "\\n\",");
+        //     }
+        // }
+        // System.out.println("};");
 
         sc.close();
         return program;

@@ -83,7 +83,7 @@ public class VBOManager {
             VBO last = vbos.get(vbos.size() - 1);
             start = last.start + last.length * last.vertSize;
         }
-        vbos.add(new VBO(start, data.length / vertSize, vertexPattern));
+        vbos.add(new VBO(start, data.length / vertSize, vertexPattern, vertSize));
         // System.out.println("s " + start + " l " + data.length / 6);
     }
 
