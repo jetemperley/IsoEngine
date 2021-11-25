@@ -43,8 +43,8 @@ public class IsoEngine extends GLCanvas implements GLEventListener, ActionListen
 
    public IsoEngine() {
 
-      // super(capabilities);
-
+      super(new GLCapabilities(GLProfile.getDefault()));
+      GLProfile p = getGLProfile();
       IsoEngine.game = this;
 
       keyPressFlags = new boolean[N_KEYS];
@@ -79,7 +79,7 @@ public class IsoEngine extends GLCanvas implements GLEventListener, ActionListen
       // add canvas to frame
       frame.getContentPane().add(this);
 
-      // frame.setSize(frame.getContentPane().getPreferredSize());
+      frame.setSize(frame.getContentPane().getPreferredSize());
       frame.pack();
       frame.setVisible(true);
       this.requestFocus();
