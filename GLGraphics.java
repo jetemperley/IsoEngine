@@ -144,7 +144,7 @@ public class GLGraphics {
 
     void readyUIProg() {
         // vertex array for the menues
-        g.glBindVertexArray(vao[1]);
+        g.glBindVertexArray(vao[0]);
         currentProgram = UIprog;
         UIprog.ready(g);
         UIprog.resetUniforms(this);
@@ -162,8 +162,8 @@ public class GLGraphics {
     }
 
     void drawMenuFace() {
-        vt = vm.getVBO(VBOManager.CUBE_TOP);
-        g.glDrawArrays(vt.vertexPattern, vt.start / vm.VERT_SIZE, vt.length);
+        VBO vt = vm.getVBO(VBOManager.CUBE_TOP);
+        g.glDrawArrays(vt.vertexPattern, vt.start / vt.vertSize, vt.length);
     }
 
     // x, y, width and heiht are all 0-1 proportions of the screen space
@@ -200,7 +200,7 @@ public class GLGraphics {
         this.g.glActiveTexture(GL4.GL_TEXTURE0);
         this.g.glBindTexture(GL4.GL_TEXTURE_2D, assetID);
         vt = vm.getVBO(VBOManager.CUBE_TOP);
-        this.g.glDrawArrays(vt.vertexPattern, vt.start / vm.VERT_SIZE, vt.length);
+        this.g.glDrawArrays(vt.vertexPattern, vt.start / vt.vertSize, vt.length);
         currentProgram.setHighlightColor(this.g, 0, 0, 0, 0);
     }
 
